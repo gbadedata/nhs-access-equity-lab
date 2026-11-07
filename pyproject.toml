@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nhs-access-equity-lab"
+version = "0.2.0"
+description = "Who misses NHS outpatient appointments: analysis of official HES and GPAD statistics, plus a synthetic test harness"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["openpyxl>=3.1"]
+
+[tool.setuptools]
+packages = ["nhs_outpatients", "access_lab"]

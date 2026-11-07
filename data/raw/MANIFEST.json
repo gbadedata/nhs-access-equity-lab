@@ -1,0 +1,62 @@
+{
+  "retrieved": "2026-11-07",
+  "licence": "Open Government Licence v3.0",
+  "files": {
+    "hes_provider_level": {
+      "path": "data/raw/hes_outpatients_2025_26/hosp-epis-stat-outp-pla-2025-26-tab.csv",
+      "title": "Hospital Outpatient Activity 2025-26: Provider Level Analysis",
+      "publisher": "NHS England",
+      "source_url": "https://files.digital.nhs.uk/5D/654D5E/hosp-epis-stat-outp-pla-2025-26-tab.csv",
+      "landing_page": "https://digital.nhs.uk/data-and-information/publications/statistical/hospital-outpatient-activity/2025-26",
+      "bytes": 6618690,
+      "sha256": "7c13d989f5d099ad98893631900a4af1885e78d36bbc7c15ccfdbbf090de9afc",
+      "published": "2026-09-24"
+    },
+    "hes_report_tables": {
+      "path": "data/raw/hes_outpatients_2025_26/hosp-epis-stat-outp-rep-tabs-2025-26-tab.xlsx",
+      "title": "Hospital Outpatient Activity 2025-26: Report Tables",
+      "publisher": "NHS England",
+      "source_url": "https://files.digital.nhs.uk/3A/DC44DE/hosp-epis-stat-outp-rep-tabs-2025-26-tab.xlsx",
+      "landing_page": "https://digital.nhs.uk/data-and-information/publications/statistical/hospital-outpatient-activity/2025-26",
+      "bytes": 142119,
+      "sha256": "ceec461e18047005b49db63700ef99a81624463a81cba030db9b2ab008da3fae"
+    },
+    "hes_ethnicity_imd": {
+      "path": "data/raw/hes_outpatients_2025_26/hosp-epis-stat-outp-eth-imd-dec-2025-26-data.csv",
+      "title": "Hospital Outpatient Activity 2025-26: Ethnic Category and IMD data",
+      "publisher": "NHS England",
+      "source_url": "https://files.digital.nhs.uk/41/3F7E90/hosp-epis-stat-outp-eth-imd-dec-2025-26-data.csv",
+      "landing_page": "https://digital.nhs.uk/data-and-information/publications/statistical/hospital-outpatient-activity/2025-26",
+      "bytes": 19170,
+      "sha256": "cba53e509779fd4f47018dcc775cd4f6b40ace835ac42055dde00e65d10edd72"
+    },
+    "hes_metadata": {
+      "path": "data/raw/hes_outpatients_2025_26/hosp-epis-stat-outp-meta-2025-26-tab.xlsx",
+      "title": "Hospital Outpatient Activity 2025-26: Metadata",
+      "publisher": "NHS England",
+      "source_url": "https://files.digital.nhs.uk/15/578BB6/hosp-epis-stat-outp-meta-2025-26-tab.xlsx",
+      "landing_page": "https://digital.nhs.uk/data-and-information/publications/statistical/hospital-outpatient-activity/2025-26",
+      "bytes": 90885,
+      "sha256": "be39123d05b16aa17487f8eabf0b92c2551cc60564edf082940131980393da82"
+    },
+    "gpad_national_overview": {
+      "path": "data/raw/gpad_2026_09/National_Overview.csv",
+      "title": "Appointments in General Practice, September 2026: National Overview",
+      "publisher": "NHS England",
+      "source_url": "https://files.digital.nhs.uk/2D/896A7A/National_Overview.csv",
+      "landing_page": "https://digital.nhs.uk/data-and-information/publications/statistical/appointments-in-general-practice/september-2026",
+      "bytes": 6154331,
+      "sha256": "6a339b57135c7f7aceb88e32916d4b6f0e6b9b982eda7df3c0ac24d893f75c9e",
+      "published": "2026-10-29"
+    },
+    "ods_nhs_trusts": {
+      "path": "data/raw/ods/etr.csv",
+      "title": "ODS etr: NHS trusts",
+      "publisher": "NHS England Organisation Data Service",
+      "source_url": "https://www.odsdatasearchandexport.nhs.uk/api/getReport?report=etr",
+      "landing_page": "https://www.odsdatasearchandexport.nhs.uk/",
+      "bytes": 57423,
+      "sha256": "335b14b70c2e7f11d81027ee902838764847651a5f2b7eb0978934b56a892b5f"
+    }
+  }
+}
