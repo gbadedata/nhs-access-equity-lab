@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1 (2026-11-07)
+
+- GitHub Actions updated to current major versions (Node 24).
+
 ## 0.2.0 (2026-11-07)
 
 - New `nhs_outpatients` package: the analysis is now computed from NHS England's official HES Outpatient 2025-26 and GPAD files (committed with a SHA-256 manifest), replacing six hand-typed headline numbers.
