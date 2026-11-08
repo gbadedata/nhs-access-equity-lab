@@ -6,7 +6,7 @@ from html import escape
 from pathlib import Path
 
 from . import svgcharts
-from .stats import funnel_limits
+from .stats import funnel_limits, ratio_limits
 
 CSS = """
 :root{color-scheme:light dark}*{box-sizing:border-box}
@@ -73,8 +73,14 @@ def write_tables(findings: dict, folder: Path) -> None:
     dump("attendance_type.csv", findings["attendance_type"])
     dump("regions.csv", findings["regions"])
     dump("deprivation.csv", findings["deprivation"]["deciles"])
-    dump("nhs_trusts_funnel.csv", [{k: r[k] for k in ("code", "ods_code", "name", "appointments", "known_outcome",
-                                                      "dna", "dna_rate", "flag")} for r in findings["providers"]["nhs_trusts"]])
+    dump("nhs_trusts_funnel.csv", [
+        {k: r[k] for k in ("code", "ods_code", "name", "appointments", "attended", "dna", "cancellations", "attended_or_dna",
+                           "dna_rate", "flag")}
+        | {"age_expected_dna": r["age"]["expected"], "age_ratio": r["age"]["ratio"], "age_flag": r["age"]["flag"],
+           "eric_type": r.get("peer", {}).get("eric_type"), "peer_group": r.get("peer", {}).get("group"),
+           "peer_ratio": r.get("peer", {}).get("ratio"), "peer_flag": r.get("peer", {}).get("flag"),
+           "flag_v022_denominator": r["flag_old_denominator"]}
+        for r in findings["providers"]["nhs_trusts"]])
     gp = findings["general_practice"]
     dump("gp_dna_by_mode.csv", [{"month": m, **{mode: series[i] for mode, series in gp["dna_share_of_known_by_mode"].items()}}
                                 for i, m in enumerate(gp["months"])])
@@ -91,8 +97,16 @@ def render(findings: dict, output: Path) -> None:
     oldest = min(ages, key=lambda a: (a["female_dna_pct"] + a["male_dna_pct"]))
     first_in_person, first_remote = types[0], types[1]
     london = next(r for r in regions if r["code"] == "Y56")
-    flagged_above = [r for r in prov["nhs_trusts"] if r["flag"] == "above"]
-    flagged_below = [r for r in prov["nhs_trusts"] if r["flag"] == "below"]
+    peer = prov["peer_groups"]
+    every = prov["stand_out_in_every_view"]
+    age_changes = [r for r in prov["nhs_trusts"] if r["flag"] != r["age"]["flag"]]
+    stand_out_sentence = (
+        f"Allowing for age changes the verdict for {len(age_changes)} trusts"
+        + (", and comparing each trust only with trusts of the same type changes it again" if peer else "")
+        + f". Only {len(every)} stand out in the same direction however they are compared: "
+        + "; ".join(f"{nice_name(r['name'])} ({'higher' if r['flag'] == 'above' else 'lower'})"
+                    for r in prov["nhs_trusts"] if r["name"] in every)
+        + ". Those are the ones worth a conversation with the trust's information team, starting with how missed appointments are recorded.")
     missing_eth = eth["recording"]["missing_share"] * 100
     first, last = trend[0], trend[-1]
 
@@ -121,11 +135,11 @@ carry no ethnicity at all. Better recording is a precondition for monitoring ine
 telephone or video have a recorded DNA rate of {_p(first_remote['dna_pct'])} against {_p(first_in_person['dna_pct'])} in person. Patients,
 specialties and the way a missed call is recorded all differ between the two. A remote-first change should be piloted with an evaluation plan
 and with in-person routes kept open.</li>
-<li><strong>Most variation between trusts is not a performance signal.</strong> On plain statistical limits {prov['naive_outside_998']} of
-{len(prov['nhs_trusts'])} trusts look like outliers; after allowing for real between-trust differences, {prov['above_998']} sit above and
-{prov['below_998']} below the 99.8% limits. The high ones are mental health and community trusts and a children's hospital, whose appointments
-are not like an acute hospital's; the two lowest are community trusts with DNA rates under 1%, which points to how DNAs are recorded. The next step
-is to compare like with like, by trust type.</li>
+<li><strong>Compare trusts like with like before acting on a league table.</strong> On plain statistical limits
+{prov['naive_outside_998']} of {len(prov['nhs_trusts'])} trusts look like outliers; allowing for real between-trust variation,
+{prov['above_998']} sit above and {prov['below_998']} below the 99.8% limits. {stand_out_sentence}
+{len(prov['trusts_reporting_no_cancellations'])} trusts report no cancellations to HES at all, so rates here leave cancellations out of the
+denominator.</li>
 </ol>"""
 
     trend_chart = svgcharts.lines(
@@ -170,17 +184,51 @@ is to compare like with like, by trust type.</li>
         lambda v: f"{v:,.0f}", "First attendances per 100,000", highlight={"Most deprived 10%"})
 
     p0, tau2 = prov["p0"], prov["overdispersion"]["tau2"]
+    fmt_n = lambda n: f"{n:,.0f}" if n < 1e6 else f"{n / 1e6:.0f}m"
     funnel_chart = svgcharts.funnel(
         f"Did-not-attend rate for {len(prov['nhs_trusts'])} NHS trusts, 2025-26",
-        "Each dot is a trust with at least 10,000 appointments. Limits allow for real between-trust variation "
-        "(Spiegelhalter 2005, arcsine scale).",
-        [{"n": r["known_outcome"], "p": r["dna_rate"], "label": nice_name(r["name"]), "flag": r["flag"]} for r in prov["nhs_trusts"]],
-        p0, lambda n, z: funnel_limits(n, p0, z, tau2), lambda v: f"{100 * v:.1f}%",
-        lambda n: f"{n:,.0f}" if n < 1e6 else f"{n / 1e6:.0f}m",
-        "Appointments with a recorded outcome (log scale)")
-    flagged_rows = [[nice_name(r["name"]), f"{r['known_outcome']:,}", _p(100 * r["dna_rate"], 2),
-                     "above" if r["flag"] == "above" else "below"] for r in flagged_above + flagged_below]
+        "Each dot is a trust with at least 10,000 appointments. DNA rate = DNAs / (attended + DNAs). Limits allow for real "
+        "between-trust variation (Spiegelhalter 2005, arcsine scale).",
+        [{"n": r["attended_or_dna"], "p": r["dna_rate"], "label": nice_name(r["name"]), "flag": r["flag"]} for r in prov["nhs_trusts"]],
+        p0, lambda n, z: funnel_limits(n, p0, z, tau2), lambda v: f"{100 * v:.1f}%", fmt_n,
+        "Appointments attended or missed (log scale)", volume_name="appointments attended or missed")
+    age_tau2 = prov["age_overdispersion"]["tau2"]
+    age_chart_trusts = svgcharts.funnel(
+        "Missed appointments against what the trust's age mix predicts",
+        "Ratio of each trust's DNAs to the number expected if England's DNA rate for each age band applied to its own patients "
+        "(indirect standardisation). 1.0 = as expected. Limits allow for real between-trust variation (square-root scale).",
+        [{"n": r["age"]["expected"], "p": r["age"]["ratio"], "label": nice_name(r["name"]), "flag": r["age"]["flag"]}
+         for r in prov["nhs_trusts"]],
+        1.0, lambda n, z: ratio_limits(n, z, age_tau2), lambda v: f"{v:.2f}", fmt_n,
+        "Expected DNAs (log scale)", reference_label="As expected", value_name="Ratio to expected",
+        volume_name="expected DNAs")
+    view_names = ["Against England", "Allowing for age"] + (["Against similar trusts"] if peer else [])
+    def verdict(flag):
+        return {"above": "Higher", "below": "Lower"}.get(flag, "-")
+    stand_out_rows = []
+    for r in prov["nhs_trusts"]:
+        if r["name"] not in prov["stand_out_in_any_view"]:
+            continue
+        row = [nice_name(r["name"])] + ([(r["peer"]["eric_type"] or "Not in ERIC").capitalize()] if peer else []) + [
+            _p(100 * r["dna_rate"]), verdict(r["flag"]), verdict(r["age"]["flag"])]
+        if peer:
+            row.append(verdict(r["peer"]["flag"]) if r["peer"]["ratio"] is not None else "No peer limits")
+        stand_out_rows.append(row)
+    stand_out_table = _table(["Trust"] + (["ERIC trust type"] if peer else []) + ["DNA rate"] + view_names, stand_out_rows)
+    peer_rows = [[g, str(e["trusts"]), f"{e['group_ratio_to_england']:.2f}",
+                  f"{e['above_998']} higher, {e['below_998']} lower" if e["limits"] and g != "Not in ERIC" else "Too few trusts for limits"]
+                 for g, e in (peer or {}).items()]
+    mh, cc = (peer or {}).get("Mental health and learning disability"), (peer or {}).get("Community and care")
+    peer_note = (f"<p class='small muted'>General acute trusts are pooled across ERIC's size and teaching bands. Only {mh['trusts']} of "
+                 f"England's {mh['trusts_in_eric']} mental health and learning disability trusts appear, because much of what mental health trusts "
+                 "do is recorded in the Mental Health Services Data Set rather than HES. "
+                 f"{cc['trusts']} community and care trusts is too few to estimate how much such trusts genuinely differ, so they get no "
+                 f"limits of their own (the minimum, {prov['min_peer_group']}, was set before the ERIC file was loaded). Specialist trusts "
+                 "(children's, cancer, eye, orthopaedic, heart) differ a lot from each other, so their group limits are wide.</p>") if peer else ""
+    peer_table = _table(["Peer group", "Trusts", "Group's age-adjusted ratio to England", "Outside the 99.8% limits"], peer_rows) if peer else ""
     screened_rows = [[nice_name(r["name"]), f"{r['appointments']:,}", _p(100 * r["unknown_share"])] for r in prov["screened_out_unknown_outcomes"]]
+    old = prov["sensitivity_old_denominator"]
+    rounding = prov["age_band_rounding"]
 
     months = gp["months"]
     gp_chart = svgcharts.lines(
@@ -195,7 +243,9 @@ is to compare like with like, by trust type.</li>
     defs = _table(["Measure", "Definition used here"], [
         ["DNA rate (headline, ethnicity, region, trend)", "DNAs / all appointments, matching the HES publication"],
         ["DNA rate (age, appointment type)", "DNAs / (attended + DNA); those tables publish no cancellations"],
-        ["DNA rate (trust funnel)", "DNAs / appointments with a recorded outcome; trusts with over 5% unknown outcomes screened out"],
+        ["DNA rate (trust comparison)", "DNAs / (attended + DNAs), the standard definition for comparing missed appointments; trusts with over 5% unknown outcomes screened out"],
+        ["Age-adjusted ratio", "Observed DNAs / expected DNAs, where expected applies England's DNA rate in each of 11 age bands to the trust's own attended-or-missed appointments"],
+        ["Ratio limits", "(1 ± z·√(1/4E + τ²))², E = expected DNAs; τ² from winsorised z-scores on the square-root scale (Spiegelhalter 2005)"],
         ["Ratio to White", "Ratio of two proportions with a 95% interval on the log scale (Katz)"],
         ["Funnel limits", "sin²(asin√p₀ ± z·√(1/4n + τ²)), z = 1.96 and 3.09; τ² from winsorised z-scores on the arcsine scale (Spiegelhalter 2005)"],
         ["GP DNA rate", "DNA / (attended + DNA); about 6% of GP appointments have an unknown status"],
@@ -229,19 +279,36 @@ after age-standardising with local data. Census medians from ONS, Ethnic group b
 least deprived tenth. Need for care is higher in deprived areas, but their populations are also younger, so a crude rate cannot say whether access
 is worse. It is a question to test with age- and need-adjusted local data, not a finding.</p>
 
-<h2>Trust variation: most of it is expected</h2>{funnel_chart}
-<p>Trusts outside the 99.8% limits:</p>{_table(["Trust", "Appointments with recorded outcome", "DNA rate", "Position"], flagged_rows)}
+<h2>Comparing trusts like with like</h2>
+<p>A single league table of trusts mixes acute hospitals with mental health, community and specialist trusts, whose patients and clinics
+are not alike. This section compares each trust three ways: against England, after allowing for the age of its patients, and
+{"against trusts of the same type, as classified in NHS England's Estates Returns Information Collection (ERIC)" if peer else "against trusts of the same type once a trust-type lookup is loaded"}.
+A trust that stands out on every view is worth a question; one that stands out on only one is mostly telling you about the comparison.</p>
+{funnel_chart}
+{age_chart_trusts}
+{('<p>Peer groups, from ERIC trust types:</p>' + peer_table + peer_note) if peer else ''}
+<p>Every trust outside the 99.8% limits on at least one view:</p>{stand_out_table}
 <div class="box warn"><strong>Screened out before comparison.</strong> These trusts recorded more than 5% of appointments with an unknown outcome,
 so their DNA rate cannot be compared fairly. East London NHS Foundation Trust's 88,765 appointments all have an unknown outcome: a naive analysis
 would have shown it as the best performer in England with a 0% DNA rate.</div>
 {_table(["Trust", "Appointments", "Unknown outcome"], screened_rows)}
-<p class="small muted"><strong>Sensitivity.</strong> Fitting the same model on the untransformed proportion scale puts
-{prov['sensitivity_untransformed']['outside_998']} trusts outside the limits rather than {prov['above_998'] + prov['below_998']}; the extra ones are
-{' and '.join(nice_name(n) for n in prov['sensitivity_untransformed']['flagged_only_untransformed'])}. Treat those as borderline, not as outliers.</p>
+<div class="box"><strong>Why cancellations are left out of the rate.</strong> {len(prov['trusts_reporting_no_cancellations'])} of the
+{len(prov['nhs_trusts'])} trusts report no patient or hospital cancellations to HES at all, while at a typical trust cancellations are around a
+fifth of appointments. Dividing DNAs by every appointment with a recorded outcome, as version 0.2.2 of this analysis did, made those trusts'
+rates look higher purely because of how they record cancellations. On that older definition {old['above_998']} trusts sat above the limits and
+{old['below_998']} below.</div>
+<p class="small muted"><strong>Sensitivity.</strong> Fitting the national model on the untransformed proportion scale puts
+{prov['sensitivity_untransformed']['outside_998']} trusts outside the limits rather than {prov['above_998'] + prov['below_998']}, and
+{' and '.join(nice_name(n) for n in prov['sensitivity_untransformed']['flagged_only_untransformed'])} are flagged only on that scale. Treat those
+two as borderline. The age
+adjustment uses the 11 age bands HES publishes for each trust. HES rounds trust counts to the nearest 5 and suppresses very small ones, so a
+trust's age bands do not always add up to its total: expected counts move by at most {rounding['max_volume_gap'] * 100:.2f}%, and observed DNAs
+by more than 1% at only {len(rounding['dna_gap_over_1pct'])} trusts ({', '.join(f"{nice_name(n)}: {lost} of {total}" for n, lost, total in rounding['dna_gap_over_1pct'])}
+DNAs in suppressed cells), none of which changes a verdict.</p>
 <p class="small muted">Trusts are identified by joining HES provider codes to the ODS register of NHS trusts (<code>etr</code>).
 {len(prov['codes_matched_after_removing_X_suffix'])} large trusts appear in HES with a <code>-X</code> suffix that the HES metadata does not
 explain; they match ODS once the suffix is removed. {len(prov['other_providers'])} other providers with 10,000+ appointments are independent-sector
-organisations (or a closed trust code) and are not on this chart.</p>
+organisations (or a closed trust code) and are not on these charts.</p>
 
 <h2>In general practice, mode matters even more</h2>{gp_chart}
 <p class="small muted">In {gp['latest_month']}, {gp['latest_mode_share_pct']['Face-to-Face']:.0f}% of GP appointments were face to face and

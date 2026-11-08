@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.3 (2026-11-08)
+
+- **Correction:** the trust comparison now uses DNAs / (attended + DNAs). 22 trusts report no cancellations to HES, and the v0.2.2 denominator (every recorded outcome, cancellations included) made their rates look higher. Against England, 6 trusts are now above the 99.8% limits and 6 below (v0.2.2: 4 and 2, kept as a sensitivity check).
+- Trusts are now compared like with like: after allowing for patients' age (indirect standardisation, square-root-scale funnel) and against trusts of the same type in NHS England's ERIC 2025/26. Only 3 trusts stand out in the same direction on every view.
+- New source file: ERIC 2025/26 trust data, added to the SHA-256 manifest; new `eric.py` loader that refuses unknown trust types.
+- Report and README: like-for-like section, age-adjusted funnel chart, peer-group table, cancellation note. Funnel charts accept ratios as well as proportions. 66 tests.
+
 ## 0.2.2 (2026-11-08)
 
 - Funnel plot overdispersion now uses the arcsine-square-root scale, as in Spiegelhalter's method for proportions: 6 trusts outside the 99.8% limits (4 above, 2 below), not 8. The untransformed result is kept as a sensitivity check that names the 2 borderline trusts.

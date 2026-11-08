@@ -34,7 +34,7 @@ Missed hospital appointments are usually discussed as a patient behaviour proble
 | 2 | Men aged 20-24 miss **13.8%** of appointments; people in their late 70s about **3.5%** | Design reminders and booking with the groups who miss most |
 | 3 | Black patients' DNA rate is **1.81 times** the White rate, but part of that is age, and **18.9%** of attendances have no ethnicity recorded | Fix ethnicity recording before drawing equity conclusions |
 | 4 | Remote first appointments are missed less: **4.3%** against **7.0%** in person | Pilot remote options with an evaluation, keeping in-person routes |
-| 5 | Plain statistics flag **142 of 151** trusts as outliers; allowing for normal variation, **6** | Compare trusts of the same type before judging any of them |
+| 5 | Plain statistics flag **144 of 151** trusts as outliers; allowing for normal variation, **12**; compared like with like, only **3** | Compare trusts by age mix and type before judging any of them |
 
 Every figure is computed from the official files in [`data/raw/`](data/raw/). None is typed in by hand.
 
@@ -73,14 +73,52 @@ Black patients' DNA rate is 8.8%, against 4.9% for White patients (ratio 1.81). 
 
 First appointments by telephone or video are missed 4.3% of the time, against 7.0% in person; follow-ups 4.8% against 6.8%. Patients, specialties and the way a missed call is recorded all differ between the two, so this is a reason to pilot and evaluate, not proof that remote appointments cause better attendance.
 
-### Most variation between trusts is expected
+### Compared like with like, only 3 trusts stand out
+
+A single league table mixes acute hospitals with mental health, community and specialist trusts. Each trust is compared three ways: against England, after allowing for the age of its patients, and against trusts of the same type in NHS England's [Estates Returns Information Collection](https://digital.nhs.uk/data-and-information/publications/statistical/estates-returns-information-collection/summary-page-and-dataset-for-eric-2025-26) (ERIC).
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/funnel-dark.png">
-  <img alt="Funnel plot of DNA rate against volume for 151 NHS trusts, with England at 5.4% and overdispersion-adjusted 95% and 99.8% limits. Four trusts sit above the 99.8% limit and two below; the rest are within limits." src="docs/images/funnel-light.png" width="760">
+  <img alt="Funnel plot of DNA rate, DNAs divided by attended plus DNAs, against volume for 151 NHS trusts, with England at 6.5% and overdispersion-adjusted 95% and 99.8% limits. 6 trusts sit above the 99.8% limit and 6 below." src="docs/images/funnel-light.png" width="760">
 </picture>
 
-With very large trusts, plain binomial limits are so narrow that 142 of 151 trusts look like outliers. Allowing for genuine between-trust variation ([Spiegelhalter 2005](https://doi.org/10.1002/sim.1970)), four sit above the 99.8% limit and two below. The high ones are three mental health and community trusts and a children's hospital, whose clinics are not comparable with an acute hospital's. The two lowest are community trusts with DNA rates under 1%, which points to how DNAs are recorded. Two more trusts cross the line if the model is fitted without the variance-stabilising transformation; the report names them as borderline.
+With very large trusts, plain binomial limits are so narrow that 144 of 151 trusts look like outliers. Allowing for genuine between-trust variation ([Spiegelhalter 2005](https://doi.org/10.1002/sim.1970)), 6 sit above the 99.8% limit and 6 below.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/funnel-age-dark.png">
+  <img alt="Funnel plot of each trust's ratio of observed to expected DNAs, where expected applies England's DNA rate in each age band to the trust's own patients, against expected DNAs. 7 trusts sit above the 99.8% limit and 6 below." src="docs/images/funnel-age-light.png" width="760">
+</picture>
+
+Allowing for age moves trusts both ways: a mental health trust whose patients are young drops back inside the limits, and an eye hospital whose patients are old moves outside them. Comparing each trust only with its own type moves the list again. Every trust outside the 99.8% limits on at least one view, with the 3 that stand out on all three in bold:
+
+| Trust | ERIC type | DNA rate | Against England | Allowing for age | Against same type |
+|---|---|---|---|---|---|
+| **North Staffordshire Combined Healthcare** | Mental health and learning disability | 17.0% | Higher | Higher | Higher |
+| Oxleas | Mental health and learning disability | 16.9% | Higher | Higher | · |
+| Lancashire & South Cumbria | Mental health and learning disability | 13.6% | Higher | Higher | · |
+| Leicestershire Partnership | Mental health and learning disability | 12.7% | Higher | · | · |
+| Herefordshire and Worcestershire Health and Care | Community | 11.8% | Higher | Higher | no limits |
+| Barking, Havering and Redbridge University Hospitals | Acute - teaching | 11.2% | Higher | · | Higher |
+| Liverpool University Hospitals | Acute - teaching | 10.6% | · | Higher | Higher |
+| Moorfields Eye Hospital | Acute - specialist | 10.5% | · | Higher | · |
+| Midlands Partnership University | Mental health and learning disability | 9.8% | · | Higher | · |
+| **Norfolk and Norwich University Hospitals** | Acute - teaching | 3.0% | Lower | Lower | Lower |
+| The Royal Marsden | Acute - specialist | 2.8% | Lower | Lower | · |
+| Dorset Healthcare University | Mental health and learning disability | 2.7% | Lower | Lower | · |
+| The Christie | Acute - specialist | 2.6% | Lower | Lower | · |
+| Leeds Community Healthcare | Community | 0.7% | Lower | Lower | no limits |
+| **Cornwall Partnership** | Mental health and learning disability | 0.1% | Lower | Lower | Lower |
+
+| Peer group | Trusts | Group ratio to England, age-adjusted | Outside the 99.8% limits |
+|---|---|---|---|
+| Acute | 115 | 1.03 | 2 higher, 1 lower |
+| Acute specialist | 16 | 0.95 | 0 higher, 0 lower |
+| Community and care | 7 | 1.25 | too few for limits (minimum 8) |
+| Mental health and learning disability | 13 | 0.86 | 1 higher, 1 lower |
+
+Only 13 of England's 45 mental health and learning disability trusts appear, because much of what they do is recorded in the Mental Health Services Data Set rather than HES. The trusts that stand out on every view are where a conversation with the information team should start, beginning with how missed appointments are recorded: Cornwall Partnership's rate of 0.1% looks more like a question about how DNAs are recorded than a near-perfect clinic.
+
+**Why cancellations are left out of the rate.** 22 of the 151 trusts report no patient or hospital cancellations to HES at all, while at a typical trust cancellations are about a fifth of appointments. Version 0.2.2 divided DNAs by every appointment with a recorded outcome, which made those trusts' rates look higher purely because of how they record cancellations. The trust comparison now uses DNAs ÷ (attended + DNAs), the definition used in UK official statistics for comparing missed appointments. The old definition is kept as a sensitivity check and reproduces version 0.2.2's 4 above and 2 below exactly.
 
 Four trusts are left out because more than 5% of their outcomes are unknown. East London NHS Foundation Trust's 88,765 appointments **all** have an unknown outcome: a naive ranking would have put it first in England with a 0% DNA rate.
 
@@ -96,10 +134,12 @@ The [live report](https://gbadedata.github.io/nhs-access-equity-lab/) also cover
 | CI rebuilds the report and diffs it against the committed one | What you read is what the code produces, on Python 3.11, 3.12 and 3.13 | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) |
 | Outcome-recording screen, with exclusions listed | No trust is ranked on data it didn't record | [`nhs_outpatients/analysis.py`](nhs_outpatients/analysis.py) |
 | Providers identified through the ODS trust register | NHS trusts are not confused with independent-sector sites | same |
+| Every ranked trust matched to an ERIC trust type; unknown types refused, not guessed | Like-for-like groups come from NHS England's own classification | [`nhs_outpatients/eric.py`](nhs_outpatients/eric.py) |
+| Previous trust definition kept as a sensitivity check | The v0.2.2 result is reproduced exactly, so the change is traceable | [`docs/decision_log.md`](docs/decision_log.md) |
 | Publisher conventions handled explicitly | `*` stays missing, not zero; rounding to 5 and the 2010 deprivation index are stated | [`docs/methods.md`](docs/methods.md) |
 | Standard-library XLSX reader tested against openpyxl | No hidden parsing differences, no dependencies | [`nhs_outpatients/xlsx.py`](nhs_outpatients/xlsx.py) |
 
-51 tests in total.
+66 tests in total.
 
 ## How it works
 
@@ -110,6 +150,7 @@ flowchart LR
     HES["HES Outpatient 2025-26<br/>provider CSV + report XLSX"]
     GP["GPAD National Overview<br/>Sept 2026"]
     ODS["ODS register of<br/>NHS trusts (etr)"]
+    ERIC["ERIC 2025/26<br/>trust types"]
     MAN["MANIFEST.json<br/>sizes + SHA-256 digests"]
   end
   raw --> V{"verify"}
@@ -130,9 +171,9 @@ Python 3.11 or later. Nothing to install.
 git clone https://github.com/gbadedata/nhs-access-equity-lab.git
 cd nhs-access-equity-lab
 
-python -m nhs_outpatients verify          # check all six source files against MANIFEST.json
+python -m nhs_outpatients verify          # check all seven source files against MANIFEST.json
 python -m nhs_outpatients                 # rebuild the report
-python -m unittest discover -s tests      # 51 tests
+python -m unittest discover -s tests      # 66 tests
 ```
 
 Expected output of the second command:
@@ -153,7 +194,9 @@ Expected output of the second command:
 |---|---|
 | DNA rate: headline, trend, ethnicity, region | DNAs ÷ all appointments, matching the HES publication |
 | DNA rate: age, appointment type, specialty | DNAs ÷ (attended + DNA); those tables publish no cancellations |
-| DNA rate: trust comparison | DNAs ÷ appointments with a recorded outcome |
+| DNA rate: trust comparison | DNAs ÷ (attended + DNA); some trusts report no cancellations, so they are left out of the denominator |
+| Age-adjusted ratio | Observed DNAs ÷ expected DNAs, applying England's DNA rate in each of 11 age bands to the trust's own appointments |
+| Peer group | ERIC trust type: general acute (all size and teaching bands), acute specialist, mental health and learning disability, community and care |
 | Ratio to the White group | Ratio of two proportions, 95% interval on the log scale (Katz) |
 | GP DNA rate | DNA ÷ (attended + DNA); about 6% of GP appointments have an unknown status |
 
@@ -161,17 +204,22 @@ Funnel plot limits are set on the variance-stabilising arcsine scale, with betwe
 
 $$\sin^2\left(\arcsin\sqrt{p_0} \pm z\sqrt{\frac{1}{4n} + \tau^2}\right)$$
 
+Age-adjusted and peer-group ratios use the square-root scale for observed over expected counts, where *E* is the expected number of DNAs (scaled to the peer group's own level for the peer comparison):
+
+$$\left(1 \pm z\sqrt{\frac{1}{4E} + \tau^2}\right)^2$$
+
 Full detail, including every reconciliation check, is in [`docs/methods.md`](docs/methods.md). Design decisions are in [`docs/decision_log.md`](docs/decision_log.md).
 
 ## Data sources
 
-All retrieved 7 November 2026 and committed unchanged.
+Retrieved 7 and 8 November 2026 and committed unchanged.
 
 | Dataset | Publisher | Published | Used for |
 |---|---|---|---|
 | [Hospital Outpatient Activity 2025-26](https://digital.nhs.uk/data-and-information/publications/statistical/hospital-outpatient-activity/2025-26): provider-level analysis, report tables, ethnicity and IMD data, metadata | NHS England | 24 Sep 2026 | Everything about hospital outpatients |
 | [Appointments in General Practice, September 2026](https://digital.nhs.uk/data-and-information/publications/statistical/appointments-in-general-practice/september-2026): National Overview | NHS England | 29 Oct 2026 | GP DNA rate by appointment mode |
 | ODS `etr` report, NHS trusts | NHS England Organisation Data Service | weekly | Identifying NHS trusts |
+| [Estates Returns Information Collection 2025/26](https://digital.nhs.uk/data-and-information/publications/statistical/estates-returns-information-collection/summary-page-and-dataset-for-eric-2025-26): trust data | NHS England | 15 Oct 2026 | Trust type, for like-for-like comparison |
 | [Ethnic group by age and sex, Census 2021](https://www.ons.gov.uk/peoplepopulationandcommunity/culturalidentity/ethnicity/articles/ethnicgroupbyageandsexenglandandwales/latest) | ONS | 23 Jan 2023 | Median ages (context only) |
 
 ## Repository layout
@@ -181,6 +229,7 @@ nhs-access-equity-lab/
 ├── nhs_outpatients/        real-data analysis
 │   ├── sources.py          manifest and integrity check
 │   ├── hes.py · gpad.py    loaders for the published files
+│   ├── eric.py             ERIC trust types and peer groups
 │   ├── xlsx.py             standard-library .xlsx reader
 │   ├── stats.py            Wilson intervals, ratios, funnel overdispersion
 │   ├── analysis.py         every figure in the report
@@ -188,7 +237,7 @@ nhs-access-equity-lab/
 ├── data/raw/               official files + MANIFEST.json
 ├── reports/                generated report, findings, tables
 ├── access_lab/             synthetic test harness (see below)
-├── tests/                  51 tests
+├── tests/                  66 tests
 └── docs/                   methods, decisions, brief, governance
 ```
 
@@ -197,14 +246,16 @@ The `access_lab/` package generates seeded, fully synthetic appointments with pl
 ## Limits
 
 - National aggregate statistics: they describe patterns, not individual patients, and cannot say why anyone missed an appointment.
-- Nothing is age-standardised or adjusted for need, specialty mix or trust type. The report says where that matters.
+- Trusts are compared allowing for age and type, but not for specialty mix or need. Ethnicity and deprivation rates are not age-standardised; the report says where that matters.
+- Peer groups are small outside acute trusts: 13 mental health trusts and 7 community and care trusts, too few for the latter to get limits of their own.
 - GP "video or online" appointments include asynchronous online consultations, where there is little to miss.
 - Independent work, not affiliated with or endorsed by NHS England.
 
 ## Roadmap
 
 - [ ] Age-standardise DNA rates by ethnicity and deprivation, using finer data such as an approved HES extract
-- [ ] Compare trusts within type (acute, mental health, community, specialist), with specialty-mix adjustment
+- [x] Compare trusts like with like: allowing for age, and within ERIC trust type (v0.2.3)
+- [ ] Adjust the trust comparison for specialty mix as well
 - [ ] Add the 2026-27 release when NHS England publishes it, and track change year on year
 - [ ] Design a pre-registered evaluation for a reminder or booking change, keeping in-person routes open
 

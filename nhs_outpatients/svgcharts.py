@@ -212,8 +212,9 @@ def columns(title: str, subtitle: str, categories: list[str], series: list[tuple
 
 
 def funnel(title: str, subtitle: str, points: list[dict], p0: float, limits, fmt_p, fmt_n,
-           x_label: str = "Volume (log scale)") -> str:
-    """Funnel plot of proportions against volume (log x axis).
+           x_label: str = "Volume (log scale)", reference_label: str = "England", value_name: str = "DNA rate",
+           volume_name: str = "appointments with a recorded outcome", table_head: list[str] | None = None) -> str:
+    """Funnel plot of a proportion or ratio against volume (log x axis).
 
     ``points``: dicts with n, p, label, flag in {"above", "below", None}.
     ``limits(n, z)`` returns the (lower, upper) control limits at volume n; they
@@ -225,8 +226,9 @@ def funnel(title: str, subtitle: str, points: list[dict], p0: float, limits, fmt
     n_lo = 10 ** math.floor(math.log10(min(p["n"] for p in points)))
     n_hi = 10 ** math.ceil(math.log10(max(p["n"] for p in points)))
     p_vals = [p["p"] for p in points]
-    p_hi = _nice_max(max(p_vals) * 1.05)
-    ticks = _ticks(0, p_hi, 5)
+    raw_hi = max(p_vals) * 1.05
+    span = _nice_max(raw_hi / 5)
+    ticks = _ticks(0, math.ceil(raw_hi / span) * span, 5)
     p_hi = ticks[-1]
     x_of = lambda n: left + plot_w * (math.log10(n) - math.log10(n_lo)) / (math.log10(n_hi) - math.log10(n_lo))
     y_of = lambda p: top + plot_h * (1 - p / p_hi)
@@ -250,7 +252,7 @@ def funnel(title: str, subtitle: str, points: list[dict], p0: float, limits, fmt
             parts.append(f"<path d='{d}' fill='none' stroke='var(--ink2)' stroke-width='1' stroke-dasharray='{dash}' opacity='.8'/>")
     y0 = y_of(p0)
     parts.append(f"<line x1='{left}' x2='{left + plot_w}' y1='{y0:.1f}' y2='{y0:.1f}' stroke='var(--ink2)' stroke-width='1.5'/>"
-                 f"<text class='tick' x='{left + 4}' y='{y0 - 5:.1f}'>England {escape(fmt_p(p0))}</text>")
+                 f"<text class='tick' x='{left + 4}' y='{y0 - 5:.1f}'>{escape(reference_label)} {escape(fmt_p(p0))}</text>")
     for p in sorted(points, key=lambda q: q["flag"] is not None):
         x, y = x_of(p["n"]), y_of(p["p"])
         if p["flag"] == "above":
@@ -259,7 +261,7 @@ def funnel(title: str, subtitle: str, points: list[dict], p0: float, limits, fmt
             mark = f"<circle class='mark' cx='{x:.1f}' cy='{y:.1f}' r='4' fill='var(--surface)' stroke='var(--s3)' stroke-width='2'/>"
         else:
             mark = f"<circle class='mark' cx='{x:.1f}' cy='{y:.1f}' r='4' fill='var(--s1)' stroke='var(--surface)' stroke-width='1.5' opacity='.75'/>"
-        tip = f"{p['label']}\nDNA rate {fmt_p(p['p'])} of {fmt_n(p['n'])} appointments with a recorded outcome"
+        tip = f"{p['label']}\n{value_name} {fmt_p(p['p'])}, {fmt_n(p['n'])} {volume_name}"
         parts.append(f"<g data-tip='{escape(tip)}'><circle cx='{x:.1f}' cy='{y:.1f}' r='10' fill='transparent'/>{mark}</g>")
     parts.append(f"<line class='axis' x1='{left}' x2='{left + plot_w}' y1='{top + plot_h}' y2='{top + plot_h}'/></svg>")
     legend = _legend([("Above the 99.8% limit", "var(--s2)", "dot"), ("Within limits", "var(--s1)", "dot"),
@@ -268,4 +270,5 @@ def funnel(title: str, subtitle: str, points: list[dict], p0: float, limits, fmt
     legend = legend.replace("dot hollow' style='background:var(--s3)'", "dot hollow' style='border-color:var(--s3)'")
     rows = [[p["label"], fmt_n(p["n"]), fmt_p(p["p"]), p["flag"] or "within"] for p in
             sorted(points, key=lambda q: -q["p"])]
-    return _figure(title, subtitle, "".join(parts), ["Provider", "Appointments", "DNA rate", "Funnel position"], rows, legend)
+    head = table_head or ["Provider", volume_name.capitalize(), value_name, "Funnel position"]
+    return _figure(title, subtitle, "".join(parts), head, rows, legend)
