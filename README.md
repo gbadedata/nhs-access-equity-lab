@@ -26,7 +26,7 @@
 
 ## The short version
 
-Missed hospital appointments are usually discussed as a patient behaviour problem. NHS England's own 2025-26 data tells a fuller story:
+Missed hospital appointments are usually discussed as a patient behaviour problem, and NHS England asks providers to reduce them without widening health inequalities ([PR2012](#ref-nhse-dna)). Its own 2025-26 data tells a fuller story:
 
 | | Finding | What a manager should do |
 |---|---|---|
@@ -40,7 +40,7 @@ Every figure is computed from the official files in [`data/raw/`](data/raw/). No
 
 ## Contents
 
-[Findings](#findings) · [Why the numbers hold up](#why-the-numbers-hold-up) · [How it works](#how-it-works) · [Quickstart](#quickstart) · [Methods](#methods-in-brief) · [Data sources](#data-sources) · [Repository layout](#repository-layout) · [Limits](#limits) · [Roadmap](#roadmap) · [Citation and licence](#citation-and-licence)
+[Findings](#findings) · [Why the numbers hold up](#why-the-numbers-hold-up) · [How it works](#how-it-works) · [Quickstart](#quickstart) · [Methods](#methods-in-brief) · [Data sources](#data-sources) · [Repository layout](#repository-layout) · [Limits](#limits) · [Roadmap](#roadmap) · [References](#references) · [Citation and licence](#citation-and-licence)
 
 ## Findings
 
@@ -82,7 +82,7 @@ A single league table mixes acute hospitals with mental health, community and sp
   <img alt="Funnel plot of DNA rate, DNAs divided by attended plus DNAs, against volume for 151 NHS trusts, with England at 6.5% and overdispersion-adjusted 95% and 99.8% limits. 6 trusts sit above the 99.8% limit and 6 below." src="docs/images/funnel-light.png" width="760">
 </picture>
 
-With very large trusts, plain binomial limits are so narrow that 144 of 151 trusts look like outliers. Allowing for genuine between-trust variation ([Spiegelhalter 2005](https://doi.org/10.1002/sim.1970)), 6 sit above the 99.8% limit and 6 below.
+With very large trusts, plain binomial limits are so narrow that 144 of 151 trusts look like outliers. Allowing for genuine between-trust variation (Spiegelhalter [2005a](#ref-spiegelhalter-funnel), [2005b](#ref-spiegelhalter-od)), 6 sit above the 99.8% limit and 6 below.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/funnel-age-dark.png">
@@ -116,9 +116,9 @@ Allowing for age moves trusts both ways: a mental health trust whose patients ar
 | Community and care | 7 | 1.25 | too few for limits (minimum 8) |
 | Mental health and learning disability | 13 | 0.86 | 1 higher, 1 lower |
 
-Only 13 of England's 45 mental health and learning disability trusts appear, because much of what they do is recorded in the Mental Health Services Data Set rather than HES. The trusts that stand out on every view are where a conversation with the information team should start, beginning with how missed appointments are recorded: Cornwall Partnership's rate of 0.1% looks more like a question about how DNAs are recorded than a near-perfect clinic.
+Only 13 of England's 45 mental health and learning disability trusts appear, because much of what they do is recorded in the [Mental Health Services Data Set](#ref-mhsds) rather than HES. The trusts that stand out on every view are where a conversation with the information team should start, beginning with how missed appointments are recorded: Cornwall Partnership's rate of 0.1% looks more like a question about how DNAs are recorded than a near-perfect clinic.
 
-**Why cancellations are left out of the rate.** 22 of the 151 trusts report no patient or hospital cancellations to HES at all, while at a typical trust cancellations are about a fifth of appointments. Version 0.2.2 divided DNAs by every appointment with a recorded outcome, which made those trusts' rates look higher purely because of how they record cancellations. The trust comparison now uses DNAs ÷ (attended + DNAs), the definition used in UK official statistics for comparing missed appointments. The old definition is kept as a sensitivity check and reproduces version 0.2.2's 4 above and 2 below exactly.
+**Why cancellations are left out of the rate.** 22 of the 151 trusts report no patient or hospital cancellations to HES at all, while at a typical trust cancellations are about a fifth of appointments. Version 0.2.2 divided DNAs by every appointment with a recorded outcome, which made those trusts' rates look higher purely because of how they record cancellations. The trust comparison now uses DNAs ÷ (attended + DNAs), the definition UK official statistics use for comparing missed appointments ([NISRA](#ref-nisra)). The old definition is kept as a sensitivity check and reproduces version 0.2.2's 4 above and 2 below exactly.
 
 Four trusts are left out because more than 5% of their outcomes are unknown. East London NHS Foundation Trust's 88,765 appointments **all** have an unknown outcome: a naive ranking would have put it first in England with a 0% DNA rate.
 
@@ -197,10 +197,10 @@ Expected output of the second command:
 | DNA rate: trust comparison | DNAs ÷ (attended + DNA); some trusts report no cancellations, so they are left out of the denominator |
 | Age-adjusted ratio | Observed DNAs ÷ expected DNAs, applying England's DNA rate in each of 11 age bands to the trust's own appointments |
 | Peer group | ERIC trust type: general acute (all size and teaching bands), acute specialist, mental health and learning disability, community and care |
-| Ratio to the White group | Ratio of two proportions, 95% interval on the log scale (Katz) |
+| Ratio to the White group | Ratio of two proportions, 95% interval on the log scale ([Katz et al. 1978](#ref-katz)); proportions use Wilson intervals ([Wilson 1927](#ref-wilson)) |
 | GP DNA rate | DNA ÷ (attended + DNA); about 6% of GP appointments have an unknown status |
 
-Funnel plot limits are set on the variance-stabilising arcsine scale, with between-trust variance τ² estimated from winsorised z-scores (Spiegelhalter 2005) and z = 1.96 or 3.09:
+Funnel plot limits are set on the variance-stabilising arcsine scale, with between-trust variance τ² estimated from winsorised z-scores ([Spiegelhalter 2005a](#ref-spiegelhalter-funnel), [2005b](#ref-spiegelhalter-od)), the approach England's health care regulators have used ([Spiegelhalter et al. 2012](#ref-regulation)), and z = 1.96 or 3.09:
 
 $$\sin^2\left(\arcsin\sqrt{p_0} \pm z\sqrt{\frac{1}{4n} + \tau^2}\right)$$
 
@@ -258,6 +258,19 @@ The `access_lab/` package generates seeded, fully synthetic appointments with pl
 - [ ] Adjust the trust comparison for specialty mix as well
 - [ ] Add the 2026-27 release when NHS England publishes it, and track change year on year
 - [ ] Design a pre-registered evaluation for a reminder or booking change, keeping in-person routes open
+
+## References
+
+Data files are listed under [Data sources](#data-sources). Methods and definitions:
+
+1. <a id="ref-spiegelhalter-funnel"></a>Spiegelhalter DJ (2005a). Funnel plots for comparing institutional performance. *Statistics in Medicine* 2005;24(8):1185-1202. [doi:10.1002/sim.1970](https://doi.org/10.1002/sim.1970)
+2. <a id="ref-spiegelhalter-od"></a>Spiegelhalter DJ (2005b). Handling over-dispersion of performance indicators. *Quality and Safety in Health Care* 2005;14(5):347-351. [doi:10.1136/qshc.2005.013755](https://doi.org/10.1136/qshc.2005.013755)
+3. <a id="ref-regulation"></a>Spiegelhalter D, Sherlaw-Johnson C, Bardsley M, Blunt I, Wood C, Grigg O. Statistical methods for healthcare regulation: rating, screening and surveillance. *Journal of the Royal Statistical Society Series A* 2012;175(1):1-47. [doi:10.1111/j.1467-985X.2011.01010.x](https://doi.org/10.1111/j.1467-985X.2011.01010.x)
+4. <a id="ref-wilson"></a>Wilson EB. Probable inference, the law of succession, and statistical inference. *Journal of the American Statistical Association* 1927;22(158):209-212. [doi:10.1080/01621459.1927.10502953](https://doi.org/10.1080/01621459.1927.10502953)
+5. <a id="ref-katz"></a>Katz D, Baptista J, Azen SP, Pike MC. Obtaining confidence intervals for the risk ratio in cohort studies. *Biometrics* 1978;34(3):469-474. [doi:10.2307/2530610](https://doi.org/10.2307/2530610)
+6. <a id="ref-nisra"></a>Northern Ireland Statistics and Research Agency. [Activity in consultant-led outpatient services 2022/23](https://datavis.nisra.gov.uk/health/ni-outpatient-stats-22-23.html): the standardised DNA rate, missed appointments ÷ (attendances + missed appointments), for comparing missed appointments.
+7. <a id="ref-nhse-dna"></a>NHS England. [Reducing did not attends (DNAs) in outpatient services](https://www.england.nhs.uk/long-read/reducing-did-not-attends-dnas-in-outpatient-services/) (PR2012): first actions for providers, and avoiding wider health inequalities when reducing DNAs.
+8. <a id="ref-mhsds"></a>NHS England. [Mental Health Services Data Set (MHSDS)](https://digital.nhs.uk/data-and-information/data-collections-and-data-sets/data-sets/mental-health-services-data-set).
 
 ## Citation and licence
 

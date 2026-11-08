@@ -6,6 +6,7 @@
 - Trusts are now compared like with like: after allowing for patients' age (indirect standardisation, square-root-scale funnel) and against trusts of the same type in NHS England's ERIC 2025/26. Only 3 trusts stand out in the same direction on every view.
 - New source file: ERIC 2025/26 trust data, added to the SHA-256 manifest; new `eric.py` loader that refuses unknown trust types.
 - Report and README: like-for-like section, age-adjusted funnel chart, peer-group table, cancellation note. Funnel charts accept ratios as well as proportions. 66 tests.
+- README: References section (funnel and overdispersion methods, Wilson and Katz intervals, the DNA rate definition, NHS England DNA guidance, MHSDS), with in-text links; `CITATION.cff` lists ERIC and the overdispersion paper.
 
 ## 0.2.2 (2026-11-08)
 
