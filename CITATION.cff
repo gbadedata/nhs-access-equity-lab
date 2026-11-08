@@ -41,3 +41,21 @@ references:
     end: 1202
     year: 2005
     doi: "10.1002/sim.1970"
+  - type: article
+    title: "Handling over-dispersion of performance indicators"
+    authors:
+      - family-names: Spiegelhalter
+        given-names: David J.
+    journal: "Quality and Safety in Health Care"
+    volume: 14
+    issue: 5
+    start: 347
+    end: 351
+    year: 2005
+    doi: "10.1136/qshc.2005.013755"
+  - type: data
+    title: "Estates Returns Information Collection, Summary page and dataset for ERIC 2025/26"
+    authors:
+      - name: "NHS England"
+    date-released: 2026-10-15
+    url: "https://digital.nhs.uk/data-and-information/publications/statistical/estates-returns-information-collection/summary-page-and-dataset-for-eric-2025-26"
