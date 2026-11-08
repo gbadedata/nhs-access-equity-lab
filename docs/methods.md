@@ -34,7 +34,8 @@ All inputs are official files downloaded on 2026-11-07 and committed unchanged u
 
 - **Intervals for proportions:** Wilson score.
 - **Ratio to the White group:** ratio of two proportions with a Katz log-scale 95% interval. At these volumes the intervals are a few hundredths wide; the uncertainty that matters is systematic (age structure, missing ethnicity), not sampling.
-- **Funnel plot:** target is the England rate. Limits are `p0 ± z·sqrt(p0(1-p0)/n + tau²)` with z = 1.96 and 3.09. `tau²` is estimated from z-scores winsorised at the 10th and 90th percentiles (Spiegelhalter 2005, additive random effects). Without it, 142 of 151 trusts fall outside 99.8% limits, because limits for trusts with a million appointments are a few hundredths of a percentage point wide.
+- **Funnel plot:** target is the England rate p0. Rates go on the variance-stabilising arcsine-square-root scale, where the sampling variance is 1/(4n). z-scores are winsorised at the 10th and 90th percentiles and their mean square gives the overdispersion; the between-trust variance tau² is added to each trust's sampling variance (Spiegelhalter 2005, additive random effects, as used for proportions in NHS and CQC monitoring). Limits are `sin²(asin(sqrt(p0)) ± z·sqrt(1/(4n) + tau²))` with z = 1.96 and 3.09. Without tau², 142 of 151 trusts fall outside 99.8% limits, because limits for trusts with a million appointments are a few hundredths of a percentage point wide. With it, 6 do (4 above, 2 below).
+- **Sensitivity:** the same model on the untransformed proportion scale puts 8 trusts outside the limits. The 2 extra (Herefordshire and Worcestershire Health and Care, Liverpool University Hospitals) are borderline and reported as such.
 - **Trust selection:** providers with at least 10,000 appointments whose code (after removing an undocumented `-X` suffix) is a current NHS trust in ODS `etr`, and whose unknown-outcome share is at most 5%.
 
 ## Publisher conventions

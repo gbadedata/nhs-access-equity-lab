@@ -524,9 +524,10 @@
     "min_appointments": 10000,
     "max_unknown_share": 0.05,
     "overdispersion": {
-      "phi": 2683.20294,
-      "tau2": 0.000151,
-      "units": 151
+      "phi": 2679.169202,
+      "tau2": 0.000734,
+      "units": 151,
+      "scale": "arcsine square root"
     },
     "nhs_trusts": [
       {
@@ -540,7 +541,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RLY",
         "flag": "above",
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": "above"
       },
       {
         "code": "RPG",
@@ -553,7 +555,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RPG",
         "flag": "above",
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": "above"
       },
       {
         "code": "RT5",
@@ -566,7 +569,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RT5",
         "flag": "above",
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": "above"
       },
       {
         "code": "RBS",
@@ -579,7 +583,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RBS",
         "flag": "above",
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": "above"
       },
       {
         "code": "R1A",
@@ -591,8 +596,9 @@
         "dna_rate": 0.097715,
         "suppressed_outcome_cells": 2,
         "ods_code": "R1A",
-        "flag": "above",
-        "naive_flag": true
+        "flag": null,
+        "naive_flag": true,
+        "flag_untransformed": "above"
       },
       {
         "code": "REM",
@@ -604,8 +610,9 @@
         "dna_rate": 0.093355,
         "suppressed_outcome_cells": 3,
         "ods_code": "REM",
-        "flag": "above",
-        "naive_flag": true
+        "flag": null,
+        "naive_flag": true,
+        "flag_untransformed": "above"
       },
       {
         "code": "RJ1-X",
@@ -618,7 +625,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RJ1",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RC9",
@@ -631,7 +639,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RC9",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RJZ",
@@ -644,7 +653,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RJZ",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RYW",
@@ -657,7 +667,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RYW",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RQ3",
@@ -670,7 +681,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RQ3",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RF4",
@@ -683,7 +695,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RF4",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RP6",
@@ -696,7 +709,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RP6",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RMC",
@@ -709,7 +723,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RMC",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "R0A-X",
@@ -722,7 +737,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "R0A",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RX4",
@@ -735,7 +751,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RX4",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RL4",
@@ -748,7 +765,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RL4",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RKE",
@@ -761,7 +779,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RKE",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RWW",
@@ -774,7 +793,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RWW",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RTR",
@@ -787,7 +807,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RTR",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RRE",
@@ -800,7 +821,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RRE",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RW1",
@@ -813,7 +835,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RW1",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RP5",
@@ -826,7 +849,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RP5",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RVW",
@@ -839,7 +863,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RVW",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RXX",
@@ -852,7 +877,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RXX",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RTF",
@@ -865,7 +891,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RTF",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "R1H",
@@ -878,7 +905,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "R1H",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RBL",
@@ -891,7 +919,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RBL",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RV3",
@@ -904,7 +933,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RV3",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RW5",
@@ -917,7 +947,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RW5",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RWG",
@@ -930,7 +961,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RWG",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RKB",
@@ -943,7 +975,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RKB",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RXK-X",
@@ -956,7 +989,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RXK",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RXP",
@@ -969,7 +1003,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RXP",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RXN",
@@ -982,7 +1017,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RXN",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RRK-X",
@@ -995,7 +1031,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RRK",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RWJ",
@@ -1008,7 +1045,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RWJ",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RJ7",
@@ -1021,7 +1059,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RJ7",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RET",
@@ -1034,7 +1073,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RET",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RNQ",
@@ -1047,7 +1087,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RNQ",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RLT",
@@ -1060,7 +1101,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RLT",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RYJ",
@@ -1073,7 +1115,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RYJ",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "REP",
@@ -1086,7 +1129,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "REP",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RFR",
@@ -1099,7 +1143,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RFR",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RQX",
@@ -1112,7 +1157,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RQX",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RBK",
@@ -1125,7 +1171,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RBK",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RM3",
@@ -1138,7 +1185,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RM3",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "R1K",
@@ -1151,7 +1199,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "R1K",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RCX",
@@ -1164,7 +1213,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RCX",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RDR",
@@ -1177,7 +1227,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RDR",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RWD",
@@ -1190,7 +1241,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RWD",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RRJ",
@@ -1203,7 +1255,8 @@
         "suppressed_outcome_cells": 4,
         "ods_code": "RRJ",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RAE",
@@ -1216,7 +1269,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RAE",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RR8",
@@ -1229,7 +1283,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RR8",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RCF",
@@ -1242,7 +1297,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RCF",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RBT",
@@ -1255,7 +1311,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RBT",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "R1D",
@@ -1268,7 +1325,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "R1D",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RCU",
@@ -1281,7 +1339,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RCU",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "R0B",
@@ -1294,7 +1353,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "R0B",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RGP",
@@ -1307,7 +1367,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RGP",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RK9",
@@ -1320,7 +1381,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RK9",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RJ2",
@@ -1333,7 +1395,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RJ2",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RAS",
@@ -1346,7 +1409,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RAS",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RQM",
@@ -1359,7 +1423,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RQM",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RBN",
@@ -1372,7 +1437,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RBN",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RHQ",
@@ -1385,7 +1451,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RHQ",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RCD",
@@ -1398,7 +1465,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RCD",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RBQ",
@@ -1411,7 +1479,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RBQ",
         "flag": null,
-        "naive_flag": false
+        "naive_flag": false,
+        "flag_untransformed": null
       },
       {
         "code": "RRF",
@@ -1424,7 +1493,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RRF",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RAL",
@@ -1437,7 +1507,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RAL",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RMP",
@@ -1450,7 +1521,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RMP",
         "flag": null,
-        "naive_flag": false
+        "naive_flag": false,
+        "flag_untransformed": null
       },
       {
         "code": "RTE",
@@ -1463,7 +1535,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RTE",
         "flag": null,
-        "naive_flag": false
+        "naive_flag": false,
+        "flag_untransformed": null
       },
       {
         "code": "RN3",
@@ -1476,7 +1549,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RN3",
         "flag": null,
-        "naive_flag": false
+        "naive_flag": false,
+        "flag_untransformed": null
       },
       {
         "code": "RTG",
@@ -1489,7 +1563,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RTG",
         "flag": null,
-        "naive_flag": false
+        "naive_flag": false,
+        "flag_untransformed": null
       },
       {
         "code": "R0D",
@@ -1502,7 +1577,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "R0D",
         "flag": null,
-        "naive_flag": false
+        "naive_flag": false,
+        "flag_untransformed": null
       },
       {
         "code": "RXQ",
@@ -1515,7 +1591,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RXQ",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "R1F-X",
@@ -1528,7 +1605,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "R1F",
         "flag": null,
-        "naive_flag": false
+        "naive_flag": false,
+        "flag_untransformed": null
       },
       {
         "code": "RBD",
@@ -1541,7 +1619,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RBD",
         "flag": null,
-        "naive_flag": false
+        "naive_flag": false,
+        "flag_untransformed": null
       },
       {
         "code": "RY4",
@@ -1554,7 +1633,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RY4",
         "flag": null,
-        "naive_flag": false
+        "naive_flag": false,
+        "flag_untransformed": null
       },
       {
         "code": "RX1",
@@ -1567,7 +1647,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RX1",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RJL-X",
@@ -1580,7 +1661,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RJL",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RXR",
@@ -1593,7 +1675,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RXR",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RDU",
@@ -1606,7 +1689,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RDU",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RAJ",
@@ -1619,7 +1703,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RAJ",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RQY",
@@ -1632,7 +1717,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RQY",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RR7",
@@ -1645,7 +1731,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RR7",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RJE",
@@ -1658,7 +1745,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RJE",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RJN",
@@ -1671,7 +1759,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RJN",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RQW",
@@ -1684,7 +1773,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RQW",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RWA",
@@ -1697,7 +1787,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RWA",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RWX",
@@ -1710,7 +1801,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RWX",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RTX",
@@ -1723,7 +1815,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RTX",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RGN",
@@ -1736,7 +1829,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RGN",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RA2",
@@ -1749,7 +1843,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RA2",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RHW",
@@ -1762,7 +1857,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RHW",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RFS",
@@ -1775,7 +1871,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RFS",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RWY",
@@ -1788,7 +1885,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RWY",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RTK",
@@ -1801,7 +1899,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RTK",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RRV",
@@ -1814,7 +1913,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RRV",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RGM",
@@ -1827,7 +1927,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RGM",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RJ6",
@@ -1840,7 +1941,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RJ6",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RTD",
@@ -1853,7 +1955,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RTD",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RDE-X",
@@ -1866,7 +1969,8 @@
         "suppressed_outcome_cells": 4,
         "ods_code": "RDE",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RNA",
@@ -1879,7 +1983,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RNA",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RN5-X",
@@ -1892,7 +1997,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RN5",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RXC",
@@ -1905,7 +2011,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RXC",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RXW",
@@ -1918,7 +2025,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RXW",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RNN",
@@ -1931,7 +2039,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RNN",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RK5",
@@ -1944,7 +2053,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RK5",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RNS",
@@ -1957,7 +2067,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RNS",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RNZ",
@@ -1970,7 +2081,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RNZ",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RYR-X",
@@ -1983,7 +2095,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RYR",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RVR-X",
@@ -1996,7 +2109,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RVR",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RA7",
@@ -2009,7 +2123,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RA7",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RWE",
@@ -2022,7 +2137,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RWE",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "REF-X",
@@ -2035,7 +2151,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "REF",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RTH",
@@ -2048,7 +2165,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RTH",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RXF-X",
@@ -2061,7 +2179,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RXF",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RFF",
@@ -2074,7 +2193,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RFF",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RN7-X",
@@ -2087,7 +2207,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RN7",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RLQ",
@@ -2100,7 +2221,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RLQ",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RTP",
@@ -2113,7 +2235,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RTP",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RVV",
@@ -2126,7 +2249,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RVV",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RA9",
@@ -2139,7 +2263,8 @@
         "suppressed_outcome_cells": 5,
         "ods_code": "RA9",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RAX",
@@ -2152,7 +2277,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RAX",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RJC",
@@ -2165,7 +2291,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RJC",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RWH",
@@ -2178,7 +2305,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RWH",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RHM",
@@ -2191,7 +2319,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RHM",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RJR",
@@ -2204,7 +2333,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RJR",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RPA",
@@ -2217,7 +2347,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RPA",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RH8",
@@ -2230,7 +2361,8 @@
         "suppressed_outcome_cells": 4,
         "ods_code": "RH8",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RPC",
@@ -2243,7 +2375,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RPC",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RWP-X",
@@ -2256,7 +2389,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RWP",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RD8",
@@ -2269,7 +2403,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RD8",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RH5",
@@ -2282,7 +2417,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RH5",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RGT",
@@ -2295,7 +2431,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RGT",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RWF",
@@ -2308,7 +2445,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RWF",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RHU",
@@ -2321,7 +2459,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RHU",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RGR",
@@ -2334,7 +2473,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RGR",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RAN",
@@ -2347,7 +2487,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RAN",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RP4",
@@ -2360,7 +2501,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RP4",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RL1",
@@ -2373,7 +2515,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RL1",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RCB",
@@ -2386,7 +2529,8 @@
         "suppressed_outcome_cells": 3,
         "ods_code": "RCB",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RY8",
@@ -2399,7 +2543,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RY8",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RPY",
@@ -2412,7 +2557,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RPY",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "REN",
@@ -2425,7 +2571,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "REN",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RDY",
@@ -2438,7 +2585,8 @@
         "suppressed_outcome_cells": 1,
         "ods_code": "RDY",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RBV",
@@ -2451,7 +2599,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RBV",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RM1",
@@ -2464,7 +2613,8 @@
         "suppressed_outcome_cells": 2,
         "ods_code": "RM1",
         "flag": null,
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": null
       },
       {
         "code": "RY6",
@@ -2477,7 +2627,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RY6",
         "flag": "below",
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": "below"
       },
       {
         "code": "RJ8",
@@ -2490,7 +2641,8 @@
         "suppressed_outcome_cells": 0,
         "ods_code": "RJ8",
         "flag": "below",
-        "naive_flag": true
+        "naive_flag": true,
+        "flag_untransformed": "below"
       }
     ],
     "screened_out_unknown_outcomes": [
@@ -5143,9 +5295,17 @@
       "RXK-X",
       "RYR-X"
     ],
-    "above_998": 6,
+    "above_998": 4,
     "below_998": 2,
     "naive_outside_998": 142,
+    "sensitivity_untransformed": {
+      "tau2": 0.000151,
+      "outside_998": 8,
+      "flagged_only_untransformed": [
+        "HEREFORDSHIRE AND WORCESTERSHIRE HEALTH AND CARE NHS TRUST",
+        "LIVERPOOL UNIVERSITY HOSPITALS NHS FOUNDATION TRUST"
+      ]
+    },
     "dna_rate_range": [
       0.001229,
       0.141816

@@ -13,7 +13,7 @@ import unittest
 from nhs_outpatients import gpad, hes, sources
 from nhs_outpatients.analysis import build
 from nhs_outpatients.report import nice_name, render, write_tables
-from nhs_outpatients.stats import funnel_halfwidth, overdispersion, risk_ratio, wilson
+from nhs_outpatients.stats import funnel_limits, overdispersion, risk_ratio, wilson
 from nhs_outpatients.xlsx import read_sheet, sheet_names
 
 
@@ -44,7 +44,16 @@ class StatsTests(unittest.TestCase):
         events = [3000 + 250 * i for i in range(20)]
         result = overdispersion(events, totals, sum(events) / sum(totals))
         self.assertGreater(result["tau2"], 0)
-        self.assertGreater(funnel_halfwidth(100_000, 0.05, 3.09, result["tau2"]), funnel_halfwidth(100_000, 0.05, 3.09))
+        narrow, wide = funnel_limits(100_000, 0.05, 3.09), funnel_limits(100_000, 0.05, 3.09, result["tau2"])
+        self.assertLess(wide[0], narrow[0])
+        self.assertGreater(wide[1], narrow[1])
+
+    def test_limits_bracket_target_and_stay_in_range(self):
+        lower, upper = funnel_limits(50, 0.02, 3.09, 0.01)
+        self.assertGreaterEqual(lower, 0.0)
+        self.assertLess(lower, 0.02)
+        self.assertGreater(upper, 0.02)
+        self.assertLessEqual(upper, 1.0)
 
     def test_overdispersion_needs_units(self):
         with self.assertRaises(ValueError):
@@ -163,8 +172,13 @@ class FindingsTests(unittest.TestCase):
 
     def test_overdispersion_changes_the_story(self):
         providers = self.findings["providers"]
-        self.assertGreater(providers["naive_outside_998"], 100)
-        self.assertLess(providers["above_998"] + providers["below_998"], 15)
+        self.assertEqual(providers["naive_outside_998"], 142)
+        self.assertEqual((providers["above_998"], providers["below_998"]), (4, 2))
+
+    def test_sensitivity_to_scale_is_reported(self):
+        sensitivity = self.findings["providers"]["sensitivity_untransformed"]
+        self.assertEqual(sensitivity["outside_998"], 8)
+        self.assertEqual(len(sensitivity["flagged_only_untransformed"]), 2)
 
     def test_x_suffix_codes_link_to_ods(self):
         linked = {r["code"]: r["ods_code"] for r in self.findings["providers"]["nhs_trusts"]}

@@ -36,16 +36,20 @@ def overdispersion(events: list[int], totals: list[int], p0: float, winsor: floa
     """Additive random-effects overdispersion for a funnel plot of proportions.
 
     Follows Spiegelhalter (2005), "Funnel plots for comparing institutional
-    performance", Statistics in Medicine 24:1185-1202: z-scores are winsorised at
-    the 10th and 90th percentiles, phi is their mean square, and when phi shows
-    overdispersion a between-unit variance tau^2 is added to every unit's sampling
-    variance. Without this, very large NHS trusts make almost every point an
-    "outlier" because the binomial limits shrink to nothing.
+    performance", Statistics in Medicine 24:1185-1202, and "Handling
+    over-dispersion of performance indicators", Qual Saf Health Care 14:347-351,
+    in the form used for proportions in NHS and CQC monitoring: proportions are
+    put on the variance-stabilising arcsine-square-root scale, where the sampling
+    variance is 1/(4n); z-scores are winsorised at the 10th and 90th percentiles;
+    phi is their mean square; and when phi shows overdispersion a between-unit
+    variance tau^2 is added to every unit's sampling variance. Without this, very
+    large NHS trusts make almost every point an "outlier".
     """
     if len(events) != len(totals) or len(events) < 3:
         raise ValueError("need at least three units with matching lengths")
-    variances = [p0 * (1 - p0) / n for n in totals]
-    z = [(e / n - p0) / math.sqrt(v) for e, n, v in zip(events, totals, variances)]
+    target = math.asin(math.sqrt(p0))
+    variances = [1 / (4 * n) for n in totals]
+    z = [(math.asin(math.sqrt(e / n)) - target) / math.sqrt(v) for e, n, v in zip(events, totals, variances)]
     lo, hi = _quantile(z, winsor), _quantile(z, 1 - winsor)
     zw = [min(max(value, lo), hi) for value in z]
     k = len(zw)
@@ -54,8 +58,25 @@ def overdispersion(events: list[int], totals: list[int], p0: float, winsor: floa
     tau2 = 0.0
     if k * phi > k - 1:
         tau2 = (k * phi - (k - 1)) / (sum(weights) - sum(w * w for w in weights) / sum(weights))
-    return {"phi": phi, "tau2": max(tau2, 0.0), "units": k}
+    return {"phi": phi, "tau2": max(tau2, 0.0), "units": k, "scale": "arcsine square root"}
 
 
-def funnel_halfwidth(n: int, p0: float, z: float, tau2: float = 0.0) -> float:
-    return z * math.sqrt(p0 * (1 - p0) / n + tau2)
+def funnel_limits(n: int, p0: float, z: float, tau2: float = 0.0) -> tuple[float, float]:
+    """Lower and upper control limits for a proportion at volume n (arcsine scale, back-transformed)."""
+    target = math.asin(math.sqrt(p0))
+    half = z * math.sqrt(1 / (4 * n) + tau2)
+    return math.sin(max(target - half, 0.0)) ** 2, math.sin(min(target + half, math.pi / 2)) ** 2
+
+
+def overdispersion_untransformed(events: list[int], totals: list[int], p0: float, winsor: float = 0.1) -> float:
+    """tau^2 on the raw proportion scale; used only as a sensitivity check."""
+    variances = [p0 * (1 - p0) / n for n in totals]
+    z = [(e / n - p0) / math.sqrt(v) for e, n, v in zip(events, totals, variances)]
+    lo, hi = _quantile(z, winsor), _quantile(z, 1 - winsor)
+    zw = [min(max(value, lo), hi) for value in z]
+    k = len(zw)
+    phi = sum(value * value for value in zw) / k
+    weights = [1 / v for v in variances]
+    if k * phi <= k - 1:
+        return 0.0
+    return (k * phi - (k - 1)) / (sum(weights) - sum(w * w for w in weights) / sum(weights))

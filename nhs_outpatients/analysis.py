@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 import csv
+import math
 from pathlib import Path
 
 from . import gpad, hes, sources
-from .stats import funnel_halfwidth, overdispersion, risk_ratio, wilson
+from .stats import funnel_limits, overdispersion, overdispersion_untransformed, risk_ratio, wilson
 
 PUBLISHED_HEADLINE = {  # as stated in the text of the HES 2025-26 publication page
     "appointments_million": 150.3, "attendances_million": 116.9, "dnas_million": 8.2, "dna_share_pct": 5.4,
@@ -159,13 +160,18 @@ def providers(orgs, trusts_path: Path) -> dict:
         else:
             linked.append(record)
 
-    disp = overdispersion([r["dna"] for r in linked], [r["known_outcome"] for r in linked], p0)
+    events, volumes = [r["dna"] for r in linked], [r["known_outcome"] for r in linked]
+    disp = overdispersion(events, volumes, p0)
+    tau2_raw = overdispersion_untransformed(events, volumes, p0)
     for r in linked:
-        n = r["known_outcome"]
-        adjusted = funnel_halfwidth(n, p0, 3.09, disp["tau2"])
-        naive = funnel_halfwidth(n, p0, 3.09)
-        r["flag"] = "above" if r["dna_rate"] > p0 + adjusted else "below" if r["dna_rate"] < p0 - adjusted else None
-        r["naive_flag"] = abs(r["dna_rate"] - p0) > naive
+        n, rate = r["known_outcome"], r["dna_rate"]
+        lower, upper = funnel_limits(n, p0, 3.09, disp["tau2"])
+        r["flag"] = "above" if rate > upper else "below" if rate < lower else None
+        naive_lower, naive_upper = funnel_limits(n, p0, 3.09)
+        r["naive_flag"] = rate > naive_upper or rate < naive_lower
+        # Sensitivity: the same additive model on the untransformed proportion scale.
+        half = 3.09 * math.sqrt(p0 * (1 - p0) / n + tau2_raw)
+        r["flag_untransformed"] = "above" if rate > p0 + half else "below" if rate < p0 - half else None
     linked.sort(key=lambda r: -r["dna_rate"])
     return {
         "p0": p0, "min_appointments": MIN_PROVIDER_APPOINTMENTS, "max_unknown_share": MAX_UNKNOWN_OUTCOME_SHARE,
@@ -175,6 +181,11 @@ def providers(orgs, trusts_path: Path) -> dict:
         "above_998": sum(1 for r in linked if r["flag"] == "above"),
         "below_998": sum(1 for r in linked if r["flag"] == "below"),
         "naive_outside_998": sum(1 for r in linked if r["naive_flag"]),
+        "sensitivity_untransformed": {
+            "tau2": tau2_raw,
+            "outside_998": sum(1 for r in linked if r["flag_untransformed"]),
+            "flagged_only_untransformed": [r["name"] for r in linked if r["flag_untransformed"] and not r["flag"]],
+        },
         "dna_rate_range": [linked[-1]["dna_rate"], linked[0]["dna_rate"]],
     }
 

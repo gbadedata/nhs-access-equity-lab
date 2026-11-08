@@ -1,81 +1,217 @@
+<div align="center">
+
 # Who misses NHS outpatient appointments?
 
+**An auditable analysis of 150 million NHS outpatient appointments, written for the service manager who has to act on it.**
+
 [![CI](https://github.com/gbadedata/nhs-access-equity-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/gbadedata/nhs-access-equity-lab/actions/workflows/ci.yml)
-![Python](https://img.shields.io/badge/Python-3.11%2B-blue) ![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen) ![Data](https://img.shields.io/badge/data-NHS%20England%20official%20statistics-005eb8)
+[![Report](https://github.com/gbadedata/nhs-access-equity-lab/actions/workflows/pages.yml/badge.svg)](https://gbadedata.github.io/nhs-access-equity-lab/)
+![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-3776ab)
+![Dependencies](https://img.shields.io/badge/runtime%20dependencies-none-2ea44f)
+![Data](https://img.shields.io/badge/data-NHS%20England%20official%20statistics-005eb8)
+[![Licence](https://img.shields.io/badge/licence-MIT-lightgrey)](LICENSE)
 
-An analysis of 150.3 million hospital outpatient appointments (NHS England, Hospital Outpatient Activity 2025-26) and 30 months of GP appointment data, written for the person who has to decide what to do about missed appointments: a service manager, not a statistician.
+[**Live report**](https://gbadedata.github.io/nhs-access-equity-lab/) · [Methods](docs/methods.md) · [Findings as JSON](reports/findings.json) · [Tables as CSV](reports/tables/) · [Changelog](CHANGELOG.md)
 
-**Report:** [`reports/index.html`](reports/index.html) (also published to GitHub Pages by the workflow in `.github/workflows/pages.yml`).
+</div>
 
-Every number in the report is computed from the official files in `data/raw/`; none is typed in by hand. The pipeline checks each file's SHA-256 before it runs and reconciles its totals with the figures NHS England states in the publication text.
+<p align="center">
+  <a href="https://gbadedata.github.io/nhs-access-equity-lab/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/images/hero-dark.png">
+      <img alt="Report header: 150.3 million outpatient appointments in 2025-26; 8.2 million (5.4%) missed without notice; 13.9 million (9.3%) cancelled by the hospital; 18.9% of attendances with no recorded ethnicity." src="docs/images/hero-light.png" width="860">
+    </picture>
+  </a>
+</p>
 
-## What the data says
+## The short version
 
-| | 2025-26 |
-|---|---|
-| Outpatient appointments | 150.3 million |
-| Missed without notice (DNA) | 8.2 million (5.4%) |
-| Cancelled by the hospital | 13.9 million (9.3%), 1.7 times the DNAs |
-| Attendances with no recorded ethnicity | 18.9% |
+Missed hospital appointments are usually discussed as a patient behaviour problem. NHS England's own 2025-26 data tells a fuller story:
 
-1. **Hospital cancellations are the bigger problem.** They rose from 6.8% of appointments in 2015-16 to 9.3% in 2025-26, while DNAs fell from 6.6% to 5.4%. The hospital cancels 13.9% of London-commissioned appointments, against 5.6% in the South West.
-2. **Missed appointments are concentrated.** Men aged 20-24 miss 13.8% of booked appointments; people in their late 70s about 3.5%. Black patients' DNA rate (8.8%) is 1.81 times the White rate (4.9%).
-3. **The ethnicity gap is not yet a finding about ethnicity.** The Black, Asian and Mixed populations are younger than the White population (2021 Census medians 32, 32 and 19 against 43), DNA rates fall steeply with age, and the published tables cannot age-standardise. Nearly a fifth of attendances have no ethnicity recorded.
-4. **Remote appointments are missed less** (first appointments: 4.3% by telephone or video, 7.0% in person), but patients, specialties and recording differ, so that is a reason to pilot and evaluate, not proof.
-5. **Most variation between trusts is expected.** With plain binomial limits, 142 of 151 trusts look like outliers. Allowing for genuine between-trust variation (Spiegelhalter 2005), 8 do. The high ones are mostly mental health, community and children's trusts; the low ones look like recording practice.
+| | Finding | What a manager should do |
+|---|---|---|
+| 1 | Hospitals cancelled **13.9m** appointments, **1.7 times** the 8.2m patients missed | Look at cancellations before patient behaviour |
+| 2 | Men aged 20-24 miss **13.8%** of appointments; people in their late 70s about **3.5%** | Design reminders and booking with the groups who miss most |
+| 3 | Black patients' DNA rate is **1.81 times** the White rate, but part of that is age, and **18.9%** of attendances have no ethnicity recorded | Fix ethnicity recording before drawing equity conclusions |
+| 4 | Remote first appointments are missed less: **4.3%** against **7.0%** in person | Pilot remote options with an evaluation, keeping in-person routes |
+| 5 | Plain statistics flag **142 of 151** trusts as outliers; allowing for normal variation, **6** | Compare trusts of the same type before judging any of them |
 
-## Why the numbers can be trusted
+Every figure is computed from the official files in [`data/raw/`](data/raw/). None is typed in by hand.
 
-- **Reconciliation.** The provider-level file is summed back to the publication's headline (150,317,821 appointments; 8,151,086 DNAs) and the computed DNA proportion for every ethnic group matches NHS England's published figure. Tests fail if either drifts.
-- **Integrity.** `data/raw/MANIFEST.json` records the URL, size and SHA-256 of each file. `python -m nhs_outpatients verify` refuses changed files.
-- **Data-quality screens, reported rather than hidden.** Trusts with more than 5% of appointments recorded as "unknown outcome" are taken out of the comparison and listed. East London NHS Foundation Trust's 88,765 appointments all have an unknown outcome; a naive analysis would have ranked it best in England with a 0% DNA rate.
-- **Publisher conventions handled explicitly.** `*` suppression is kept as missing, not zero. Provider and regional counts are multiples of 5 (national counts are exact). HES uses the 2010 deprivation index. Fifteen trust codes carry an undocumented `-X` suffix; fourteen match ODS once it is removed and one maps to a closed trust code.
-- **Linkage through ODS.** Providers are identified as NHS trusts by joining to the ODS trust register, not by guessing from the code. A "codes starting with R are trusts" rule would have misclassified independent-sector sites that use new five-character codes.
-- **49 tests**, standard library only.
+## Contents
 
-## Run it
+[Findings](#findings) · [Why the numbers hold up](#why-the-numbers-hold-up) · [How it works](#how-it-works) · [Quickstart](#quickstart) · [Methods](#methods-in-brief) · [Data sources](#data-sources) · [Repository layout](#repository-layout) · [Limits](#limits) · [Roadmap](#roadmap) · [Citation and licence](#citation-and-licence)
 
-Python 3.11 or later. No packages to install.
+## Findings
 
-```bash
-python -m nhs_outpatients verify        # check every source file against MANIFEST.json
-python -m nhs_outpatients               # writes reports/index.html, findings.json and tables/*.csv
-python -m unittest discover -s tests -v
+### Hospital cancellations have grown while missed appointments have fallen
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/trend-dark.png">
+  <img alt="Line chart, 2015-16 to 2025-26: hospital cancellations rose from 6.8% to 9.3% of appointments (peaking at 12.4% in 2020-21); patient cancellations ended at 7.1%; did-not-attends fell from 6.6% to 5.4%." src="docs/images/trend-light.png" width="760">
+</picture>
+
+Hospital cancellations rose from 6.8% of appointments in 2015-16 to 9.3% in 2025-26, while DNAs fell from 6.6% to 5.4%. The hospital cancels 13.9% of London-commissioned appointments, against 5.6% in the South West. Part of that regional gap may be recording practice, which is itself worth checking.
+
+### Young adults, and young men most, miss the most appointments
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/age-dark.png">
+  <img alt="Line chart of DNA rate by five-year age band and sex: male rates peak at 13.8% at age 20-24 and stay above 10% until age 44; female rates peak at 10.1% at 20-24; both fall to about 3.5% at 75-79." src="docs/images/age-light.png" width="760">
+</picture>
+
+The age gradient is steep: men aged 20-24 miss 13.8% of booked appointments, people aged 75-79 about 3.5%. These are the groups to involve in redesigning reminders, booking and timing.
+
+### Ethnicity: a real gap, measured on incomplete data
+
+Black patients' DNA rate is 8.8%, against 4.9% for White patients (ratio 1.81). Mixed (7.6%), Other (7.5%) and Asian (6.5%) groups are also above the White rate. Two things stop this being a finding about ethnicity yet:
+
+- **Age.** In the 2021 Census the median age was 43 for the White group, 32 for the Asian and Black groups and 19 for the Mixed group. DNA rates fall steeply with age, and the published tables cannot be age-standardised.
+- **Missing data.** 18.9% of attendances have ethnicity "Not known" or "Not stated". If recording is worse for some groups, the gaps could be larger or smaller than they look.
+
+### Remote appointments have lower recorded DNA rates
+
+First appointments by telephone or video are missed 4.3% of the time, against 7.0% in person; follow-ups 4.8% against 6.8%. Patients, specialties and the way a missed call is recorded all differ between the two, so this is a reason to pilot and evaluate, not proof that remote appointments cause better attendance.
+
+### Most variation between trusts is expected
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/funnel-dark.png">
+  <img alt="Funnel plot of DNA rate against volume for 151 NHS trusts, with England at 5.4% and overdispersion-adjusted 95% and 99.8% limits. Four trusts sit above the 99.8% limit and two below; the rest are within limits." src="docs/images/funnel-light.png" width="760">
+</picture>
+
+With very large trusts, plain binomial limits are so narrow that 142 of 151 trusts look like outliers. Allowing for genuine between-trust variation ([Spiegelhalter 2005](https://doi.org/10.1002/sim.1970)), four sit above the 99.8% limit and two below. The high ones are three mental health and community trusts and a children's hospital, whose clinics are not comparable with an acute hospital's. The two lowest are community trusts with DNA rates under 1%, which points to how DNAs are recorded. Two more trusts cross the line if the model is fitted without the variance-stabilising transformation; the report names them as borderline.
+
+Four trusts are left out because more than 5% of their outcomes are unknown. East London NHS Foundation Trust's 88,765 appointments **all** have an unknown outcome: a naive ranking would have put it first in England with a 0% DNA rate.
+
+The [live report](https://gbadedata.github.io/nhs-access-equity-lab/) also covers regions, deprivation deciles, specialties and 30 months of GP appointments by mode.
+
+## Why the numbers hold up
+
+| Check | What it guarantees | Where |
+|---|---|---|
+| SHA-256 manifest of every source file | The data is exactly what NHS England published; a changed file stops the run | [`data/raw/MANIFEST.json`](data/raw/MANIFEST.json), `python -m nhs_outpatients verify` |
+| Rebuilds the publication's headline: 150,317,821 appointments, 8,151,086 DNAs | Nothing is lost or double-counted in parsing | [`tests/test_nhs_outpatients.py`](tests/test_nhs_outpatients.py) |
+| Reproduces NHS England's published DNA proportion for every ethnic group | The ethnicity tables are read correctly | same |
+| CI rebuilds the report and diffs it against the committed one | What you read is what the code produces, on Python 3.11, 3.12 and 3.13 | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) |
+| Outcome-recording screen, with exclusions listed | No trust is ranked on data it didn't record | [`nhs_outpatients/analysis.py`](nhs_outpatients/analysis.py) |
+| Providers identified through the ODS trust register | NHS trusts are not confused with independent-sector sites | same |
+| Publisher conventions handled explicitly | `*` stays missing, not zero; rounding to 5 and the 2010 deprivation index are stated | [`docs/methods.md`](docs/methods.md) |
+| Standard-library XLSX reader tested against openpyxl | No hidden parsing differences, no dependencies | [`nhs_outpatients/xlsx.py`](nhs_outpatients/xlsx.py) |
+
+51 tests in total.
+
+## How it works
+
+```mermaid
+flowchart LR
+  subgraph raw["data/raw/ · official files, unchanged"]
+    direction TB
+    HES["HES Outpatient 2025-26<br/>provider CSV + report XLSX"]
+    GP["GPAD National Overview<br/>Sept 2026"]
+    ODS["ODS register of<br/>NHS trusts (etr)"]
+    MAN["MANIFEST.json<br/>sizes + SHA-256 digests"]
+  end
+  raw --> V{"verify"}
+  V -->|"any file changed"| STOP["stop"]
+  V --> L["Loaders<br/>hes.py · xlsx.py · gpad.py"]
+  L --> R{"Reconcile with<br/>published totals"}
+  R -->|"mismatch"| STOP
+  R --> A["Analysis<br/>analysis.py · stats.py"]
+  A --> OUT["reports/<br/>index.html · findings.json<br/>tables/*.csv"]
+  OUT --> PAGES["GitHub Pages"]
 ```
 
-`reports/tables/` holds tidy CSVs of every chart for anyone who wants to rebuild them in Excel or Power BI.
+## Quickstart
 
-## Repository map
+Python 3.11 or later. Nothing to install.
 
-| Path | What it is |
+```bash
+git clone https://github.com/gbadedata/nhs-access-equity-lab.git
+cd nhs-access-equity-lab
+
+python -m nhs_outpatients verify          # check all six source files against MANIFEST.json
+python -m nhs_outpatients                 # rebuild the report
+python -m unittest discover -s tests      # 51 tests
+```
+
+Expected output of the second command:
+
+```text
+150,317,821 appointments, DNA 5.42%. Report: reports/index.html
+```
+
+| Output | Contents |
 |---|---|
-| `nhs_outpatients/` | The real-data analysis: loaders for HES, GPAD and ODS files, statistics, report |
-| `nhs_outpatients/xlsx.py` | A standard-library `.xlsx` reader, tested cell-for-cell against openpyxl |
-| `nhs_outpatients/stats.py` | Wilson intervals, ratio of proportions, funnel-plot overdispersion |
-| `data/raw/` | The official files, unmodified, with `MANIFEST.json` |
-| `reports/` | Generated report, findings and tables |
-| `access_lab/` | A separate synthetic pipeline used to test validation, quarantine and small-number suppression logic (see below) |
-| `docs/` | Methods, decision log, product brief, governance notes |
+| `reports/index.html` | The report: findings, charts with hover detail, data tables, definitions, sources |
+| `reports/findings.json` | Every computed figure, for reuse |
+| `reports/tables/*.csv` | Tidy tables behind each chart, ready for Excel or Power BI |
+
+## Methods in brief
+
+| Measure | Definition |
+|---|---|
+| DNA rate: headline, trend, ethnicity, region | DNAs ÷ all appointments, matching the HES publication |
+| DNA rate: age, appointment type, specialty | DNAs ÷ (attended + DNA); those tables publish no cancellations |
+| DNA rate: trust comparison | DNAs ÷ appointments with a recorded outcome |
+| Ratio to the White group | Ratio of two proportions, 95% interval on the log scale (Katz) |
+| GP DNA rate | DNA ÷ (attended + DNA); about 6% of GP appointments have an unknown status |
+
+Funnel plot limits are set on the variance-stabilising arcsine scale, with between-trust variance τ² estimated from winsorised z-scores (Spiegelhalter 2005) and z = 1.96 or 3.09:
+
+$$\sin^2\left(\arcsin\sqrt{p_0} \pm z\sqrt{\frac{1}{4n} + \tau^2}\right)$$
+
+Full detail, including every reconciliation check, is in [`docs/methods.md`](docs/methods.md). Design decisions are in [`docs/decision_log.md`](docs/decision_log.md).
+
+## Data sources
+
+All retrieved 7 November 2026 and committed unchanged.
+
+| Dataset | Publisher | Published | Used for |
+|---|---|---|---|
+| [Hospital Outpatient Activity 2025-26](https://digital.nhs.uk/data-and-information/publications/statistical/hospital-outpatient-activity/2025-26): provider-level analysis, report tables, ethnicity and IMD data, metadata | NHS England | 24 Sep 2026 | Everything about hospital outpatients |
+| [Appointments in General Practice, September 2026](https://digital.nhs.uk/data-and-information/publications/statistical/appointments-in-general-practice/september-2026): National Overview | NHS England | 29 Oct 2026 | GP DNA rate by appointment mode |
+| ODS `etr` report, NHS trusts | NHS England Organisation Data Service | weekly | Identifying NHS trusts |
+| [Ethnic group by age and sex, Census 2021](https://www.ons.gov.uk/peoplepopulationandcommunity/culturalidentity/ethnicity/articles/ethnicgroupbyageandsexenglandandwales/latest) | ONS | 23 Jan 2023 | Median ages (context only) |
+
+## Repository layout
+
+```text
+nhs-access-equity-lab/
+├── nhs_outpatients/        real-data analysis
+│   ├── sources.py          manifest and integrity check
+│   ├── hes.py · gpad.py    loaders for the published files
+│   ├── xlsx.py             standard-library .xlsx reader
+│   ├── stats.py            Wilson intervals, ratios, funnel overdispersion
+│   ├── analysis.py         every figure in the report
+│   └── report.py           HTML report and CSV tables
+├── data/raw/               official files + MANIFEST.json
+├── reports/                generated report, findings, tables
+├── access_lab/             synthetic test harness (see below)
+├── tests/                  51 tests
+└── docs/                   methods, decisions, brief, governance
+```
+
+The `access_lab/` package generates seeded, fully synthetic appointments with planted patterns. It tests the CSV contract, reason-coded quarantine, audit logging and small-number suppression against inputs where the right answer is known (`python -m access_lab run --output build`). Its numbers are invented and are never mixed with the real analysis.
 
 ## Limits
 
-- These are national aggregate statistics. They describe patterns, not individual patients, and cannot say why anyone missed an appointment.
-- Nothing here is age-standardised or adjusted for need, specialty mix or trust type. The report says where that matters.
-- The trust comparison uses DNAs as a share of appointments with a recorded outcome and pools all specialties. Trusts of different types should be compared with like.
+- National aggregate statistics: they describe patterns, not individual patients, and cannot say why anyone missed an appointment.
+- Nothing is age-standardised or adjusted for need, specialty mix or trust type. The report says where that matters.
 - GP "video or online" appointments include asynchronous online consultations, where there is little to miss.
-- Independent portfolio work. Not affiliated with or endorsed by NHS England.
+- Independent work, not affiliated with or endorsed by NHS England.
 
-## The synthetic pipeline (`access_lab`)
+## Roadmap
 
-`python -m access_lab run --output build` generates seeded, fully synthetic appointment records with known, planted patterns, and runs them through a CSV data contract, reason-coded quarantine, a SQLite load with audit rows, and small-number suppression. It exists to test that machinery against inputs where the right answer is known. Its numbers are invented and are never mixed with the real analysis.
+- [ ] Age-standardise DNA rates by ethnicity and deprivation, using finer data such as an approved HES extract
+- [ ] Compare trusts within type (acute, mental health, community, specialist), with specialty-mix adjustment
+- [ ] Add the 2026-27 release when NHS England publishes it, and track change year on year
+- [ ] Design a pre-registered evaluation for a reminder or booking change, keeping in-person routes open
 
-## Sources
+## Citation and licence
 
-- NHS England, [Hospital Outpatient Activity 2025-26](https://digital.nhs.uk/data-and-information/publications/statistical/hospital-outpatient-activity/2025-26), published 24 September 2026.
-- NHS England, [Appointments in General Practice, September 2026](https://digital.nhs.uk/data-and-information/publications/statistical/appointments-in-general-practice/september-2026).
-- NHS England Organisation Data Service, [NHS trusts (etr)](https://www.odsdatasearchandexport.nhs.uk/).
-- ONS, [Ethnic group by age and sex, England and Wales: Census 2021](https://www.ons.gov.uk/peoplepopulationandcommunity/culturalidentity/ethnicity/articles/ethnicgroupbyageandsexenglandandwales/latest).
-- NHS England, [Core20PLUS5 (adults)](https://www.england.nhs.uk/about/equality/equality-hub/national-healthcare-inequalities-improvement-programme/core20plus5/).
-- Spiegelhalter D. J. (2005). Funnel plots for comparing institutional performance. *Statistics in Medicine* 24(8):1185-1202.
+To cite this analysis, use the metadata in [`CITATION.cff`](CITATION.cff) (GitHub's "Cite this repository" button reads it).
 
-Data re-used under the Open Government Licence v3.0. Code: MIT.
+Code: [MIT](LICENSE). Data: contains public sector information licensed under the [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
+
+Built by [Oluwagbade Odimayo](https://gbadedata.com). Questions and corrections are welcome as [issues](https://github.com/gbadedata/nhs-access-equity-lab/issues).

@@ -24,6 +24,10 @@ Independent-sector sites now carry five-character codes that can start with R. J
 
 The seeded generator plants known effects, so it is useful for testing quarantine and suppression logic and useless as evidence. It stays, clearly separated.
 
+## 012 (v0.2.2): Overdispersion on the arcsine scale
+
+v0.2.0 estimated tau² on the raw proportion scale and found 8 trusts outside the 99.8% limits. Spiegelhalter's method, as used for proportions in NHS and CQC monitoring, works on a variance-stabilising scale. On that scale 6 are outside. The untransformed result stays in the report as a sensitivity check, and the 2 trusts that depend on the choice are named as borderline.
+
 ## Earlier decisions (v0.1)
 
 001 synthetic-only data; 002 SQLite and the standard library; 003 quarantine rather than silent repair; 004 describe, do not infer cause; 005 do not label waiting time as RTT. 002 to 005 still stand. 001 is superseded by 006 for the analysis.

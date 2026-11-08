@@ -1,0 +1,43 @@
+cff-version: 1.2.0
+message: "If you use or refer to this analysis, please cite it as below."
+type: software
+title: "Who misses NHS outpatient appointments? An auditable analysis of NHS England's Hospital Outpatient Activity 2025-26"
+abstract: >-
+  A reproducible analysis of 150.3 million NHS outpatient appointments and GP appointment data,
+  computed from official NHS England files with SHA-256 provenance, reconciliation to published
+  totals, and an overdispersion-adjusted comparison of NHS trusts.
+authors:
+  - family-names: Odimayo
+    given-names: Oluwagbade
+    website: "https://gbadedata.com"
+version: 0.2.2
+date-released: 2026-11-08
+license: MIT
+repository-code: "https://github.com/gbadedata/nhs-access-equity-lab"
+url: "https://gbadedata.github.io/nhs-access-equity-lab/"
+keywords:
+  - NHS
+  - health informatics
+  - outpatients
+  - did not attend
+  - health inequalities
+  - Hospital Episode Statistics
+  - funnel plot
+references:
+  - type: data
+    title: "Hospital Outpatient Activity, 2025-26"
+    authors:
+      - name: "NHS England"
+    date-released: 2026-09-24
+    url: "https://digital.nhs.uk/data-and-information/publications/statistical/hospital-outpatient-activity/2025-26"
+  - type: article
+    title: "Funnel plots for comparing institutional performance"
+    authors:
+      - family-names: Spiegelhalter
+        given-names: David J.
+    journal: "Statistics in Medicine"
+    volume: 24
+    start: 1185
+    end: 1202
+    year: 2005
+    doi: "10.1002/sim.1970"

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2 (2026-11-08)
+
+- Funnel plot overdispersion now uses the arcsine-square-root scale, as in Spiegelhalter's method for proportions: 6 trusts outside the 99.8% limits (4 above, 2 below), not 8. The untransformed result is kept as a sensitivity check that names the 2 borderline trusts.
+- Funnel x-axis now says what it plots: appointments with a recorded outcome.
+- README rebuilt: report screenshots (light and dark), findings table, verification table, architecture diagram, expected output, data sources, roadmap. Added `CITATION.cff`. 51 tests.
+
 ## 0.2.1 (2026-11-07)
 
 - GitHub Actions updated to current major versions (Node 24).

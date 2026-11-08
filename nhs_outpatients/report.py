@@ -6,7 +6,7 @@ from html import escape
 from pathlib import Path
 
 from . import svgcharts
-from .stats import funnel_halfwidth
+from .stats import funnel_limits
 
 CSS = """
 :root{color-scheme:light dark}*{box-sizing:border-box}
@@ -123,9 +123,9 @@ specialties and the way a missed call is recorded all differ between the two. A 
 and with in-person routes kept open.</li>
 <li><strong>Most variation between trusts is not a performance signal.</strong> On plain statistical limits {prov['naive_outside_998']} of
 {len(prov['nhs_trusts'])} trusts look like outliers; after allowing for real between-trust differences, {prov['above_998']} sit above and
-{prov['below_998']} below the 99.8% limits. The high ones are mostly mental health, community and children's trusts, whose appointments are not
-like an acute hospital's; the two lowest are community trusts with DNA rates under 1%, which points to how DNAs are recorded. The next step is to
-compare like with like, by trust type.</li>
+{prov['below_998']} below the 99.8% limits. The high ones are mental health and community trusts and a children's hospital, whose appointments
+are not like an acute hospital's; the two lowest are community trusts with DNA rates under 1%, which points to how DNAs are recorded. The next step
+is to compare like with like, by trust type.</li>
 </ol>"""
 
     trend_chart = svgcharts.lines(
@@ -172,10 +172,12 @@ compare like with like, by trust type.</li>
     p0, tau2 = prov["p0"], prov["overdispersion"]["tau2"]
     funnel_chart = svgcharts.funnel(
         f"Did-not-attend rate for {len(prov['nhs_trusts'])} NHS trusts, 2025-26",
-        "Each dot is a trust with at least 10,000 appointments. Limits allow for real between-trust variation (Spiegelhalter 2005).",
+        "Each dot is a trust with at least 10,000 appointments. Limits allow for real between-trust variation "
+        "(Spiegelhalter 2005, arcsine scale).",
         [{"n": r["known_outcome"], "p": r["dna_rate"], "label": nice_name(r["name"]), "flag": r["flag"]} for r in prov["nhs_trusts"]],
-        p0, lambda n, z: funnel_halfwidth(n, p0, z, tau2), lambda v: f"{100 * v:.1f}%",
-        lambda n: f"{n:,.0f}" if n < 1e6 else f"{n / 1e6:.0f}m")
+        p0, lambda n, z: funnel_limits(n, p0, z, tau2), lambda v: f"{100 * v:.1f}%",
+        lambda n: f"{n:,.0f}" if n < 1e6 else f"{n / 1e6:.0f}m",
+        "Appointments with a recorded outcome (log scale)")
     flagged_rows = [[nice_name(r["name"]), f"{r['known_outcome']:,}", _p(100 * r["dna_rate"], 2),
                      "above" if r["flag"] == "above" else "below"] for r in flagged_above + flagged_below]
     screened_rows = [[nice_name(r["name"]), f"{r['appointments']:,}", _p(100 * r["unknown_share"])] for r in prov["screened_out_unknown_outcomes"]]
@@ -195,7 +197,7 @@ compare like with like, by trust type.</li>
         ["DNA rate (age, appointment type)", "DNAs / (attended + DNA); those tables publish no cancellations"],
         ["DNA rate (trust funnel)", "DNAs / appointments with a recorded outcome; trusts with over 5% unknown outcomes screened out"],
         ["Ratio to White", "Ratio of two proportions with a 95% interval on the log scale (Katz)"],
-        ["Funnel limits", "England rate ± z·√(p(1−p)/n + τ²), z = 1.96 and 3.09; τ² from winsorised z-scores (Spiegelhalter 2005)"],
+        ["Funnel limits", "sin²(asin√p₀ ± z·√(1/4n + τ²)), z = 1.96 and 3.09; τ² from winsorised z-scores on the arcsine scale (Spiegelhalter 2005)"],
         ["GP DNA rate", "DNA / (attended + DNA); about 6% of GP appointments have an unknown status"],
     ])
 
@@ -233,6 +235,9 @@ is worse. It is a question to test with age- and need-adjusted local data, not a
 so their DNA rate cannot be compared fairly. East London NHS Foundation Trust's 88,765 appointments all have an unknown outcome: a naive analysis
 would have shown it as the best performer in England with a 0% DNA rate.</div>
 {_table(["Trust", "Appointments", "Unknown outcome"], screened_rows)}
+<p class="small muted"><strong>Sensitivity.</strong> Fitting the same model on the untransformed proportion scale puts
+{prov['sensitivity_untransformed']['outside_998']} trusts outside the limits rather than {prov['above_998'] + prov['below_998']}; the extra ones are
+{' and '.join(nice_name(n) for n in prov['sensitivity_untransformed']['flagged_only_untransformed'])}. Treat those as borderline, not as outliers.</p>
 <p class="small muted">Trusts are identified by joining HES provider codes to the ODS register of NHS trusts (<code>etr</code>).
 {len(prov['codes_matched_after_removing_X_suffix'])} large trusts appear in HES with a <code>-X</code> suffix that the HES metadata does not
 explain; they match ODS once the suffix is removed. {len(prov['other_providers'])} other providers with 10,000+ appointments are independent-sector
