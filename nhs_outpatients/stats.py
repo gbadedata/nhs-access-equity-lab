@@ -68,6 +68,41 @@ def funnel_limits(n: int, p0: float, z: float, tau2: float = 0.0) -> tuple[float
     return math.sin(max(target - half, 0.0)) ** 2, math.sin(min(target + half, math.pi / 2)) ** 2
 
 
+def _additive_tau2(z: list[float], variances: list[float], winsor: float) -> tuple[float, float]:
+    """phi and tau^2 from z-scores and sampling variances (winsorised, DerSimonian-Laird form)."""
+    lo, hi = _quantile(z, winsor), _quantile(z, 1 - winsor)
+    zw = [min(max(value, lo), hi) for value in z]
+    k = len(zw)
+    phi = sum(value * value for value in zw) / k
+    weights = [1 / v for v in variances]
+    if k * phi <= k - 1:
+        return phi, 0.0
+    return phi, (k * phi - (k - 1)) / (sum(weights) - sum(w * w for w in weights) / sum(weights))
+
+
+def ratio_overdispersion(observed: list[float], expected: list[float], winsor: float = 0.1) -> dict:
+    """Overdispersion for indirectly standardised ratios O/E (Spiegelhalter 2005).
+
+    O is treated as Poisson with mean E, so sqrt(O/E) has sampling variance
+    1/(4E) around a target of 1. The same winsorised additive model as
+    ``overdispersion`` is then applied on that square-root scale.
+    """
+    if len(observed) != len(expected) or len(observed) < 3:
+        raise ValueError("need at least three units with matching lengths")
+    if min(expected) <= 0:
+        raise ValueError("expected counts must be positive")
+    variances = [1 / (4 * e) for e in expected]
+    z = [(math.sqrt(o / e) - 1) / math.sqrt(v) for o, e, v in zip(observed, expected, variances)]
+    phi, tau2 = _additive_tau2(z, variances, winsor)
+    return {"phi": phi, "tau2": tau2, "units": len(z), "scale": "square root of O/E"}
+
+
+def ratio_limits(expected: float, z: float, tau2: float = 0.0) -> tuple[float, float]:
+    """Control limits for O/E at expected count E (square-root scale, back-transformed)."""
+    half = z * math.sqrt(1 / (4 * expected) + tau2)
+    return max(1 - half, 0.0) ** 2, (1 + half) ** 2
+
+
 def overdispersion_untransformed(events: list[int], totals: list[int], p0: float, winsor: float = 0.1) -> float:
     """tau^2 on the raw proportion scale; used only as a sensitivity check."""
     variances = [p0 * (1 - p0) / n for n in totals]

@@ -57,6 +57,17 @@
       "landing_page": "https://www.odsdatasearchandexport.nhs.uk/",
       "bytes": 57423,
       "sha256": "335b14b70c2e7f11d81027ee902838764847651a5f2b7eb0978934b56a892b5f"
+    },
+    "eric_trust_types": {
+      "path": "data/raw/eric_2025_26/ERIC_2025_26_Trust_data.csv",
+      "title": "Estates Returns Information Collection (ERIC) 2025/26: Trust data",
+      "publisher": "NHS England",
+      "source_url": "https://digital.nhs.uk/data-and-information/publications/statistical/estates-returns-information-collection/summary-page-and-dataset-for-eric-2025-26",
+      "landing_page": "https://www.gov.uk/government/statistics/estates-returns-information-collection-summary-page-and-dataset-for-eric-202526",
+      "bytes": 71290,
+      "sha256": "576e6dbe1b7568ac83332e7e3f7c0307fed0403ed934ef67ca3c09db28a8f49d",
+      "published": "2026-10-15",
+      "note": "Trust-level CSV downloaded from the publication page; Windows-1252 encoded. Used only for each trust's type."
     }
   }
 }

@@ -10,10 +10,11 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from nhs_outpatients import gpad, hes, sources
+from nhs_outpatients import eric, gpad, hes, sources
 from nhs_outpatients.analysis import build
 from nhs_outpatients.report import nice_name, render, write_tables
-from nhs_outpatients.stats import funnel_limits, overdispersion, risk_ratio, wilson
+from nhs_outpatients.stats import (funnel_limits, overdispersion, ratio_limits, ratio_overdispersion, risk_ratio,
+                                   wilson)
 from nhs_outpatients.xlsx import read_sheet, sheet_names
 
 
@@ -58,6 +59,33 @@ class StatsTests(unittest.TestCase):
     def test_overdispersion_needs_units(self):
         with self.assertRaises(ValueError):
             overdispersion([1, 2], [10, 10], 0.1)
+
+    def test_ratio_model_without_dispersion_gives_zero_tau(self):
+        expected = [400.0 + 50 * i for i in range(20)]
+        self.assertEqual(ratio_overdispersion(expected, expected)["tau2"], 0.0)
+
+    def test_ratio_overdispersion_widens_limits(self):
+        expected = [1000.0] * 20
+        observed = [700 + 30 * i for i in range(20)]
+        tau2 = ratio_overdispersion(observed, expected)["tau2"]
+        self.assertGreater(tau2, 0)
+        narrow, wide = ratio_limits(1000, 3.09), ratio_limits(1000, 3.09, tau2)
+        self.assertLess(wide[0], narrow[0])
+        self.assertGreater(wide[1], narrow[1])
+
+    def test_ratio_limits_bracket_one_and_stay_non_negative(self):
+        lower, upper = ratio_limits(4, 3.09, 0.05)
+        self.assertEqual(lower, 0.0)
+        self.assertGreater(upper, 1.0)
+        lower, upper = ratio_limits(10_000, 1.96)
+        self.assertLess(lower, 1.0)
+        self.assertGreater(upper, 1.0)
+
+    def test_ratio_model_rejects_bad_input(self):
+        with self.assertRaises(ValueError):
+            ratio_overdispersion([1, 2, 3], [1, 0, 3])
+        with self.assertRaises(ValueError):
+            ratio_overdispersion([1, 2], [1, 2])
 
 
 class SourceTests(unittest.TestCase):
@@ -128,6 +156,31 @@ class HesParsingTests(unittest.TestCase):
                 hes.load_provider_level(path)
 
 
+class EricTests(unittest.TestCase):
+    def test_reads_every_trust_and_type(self):
+        types = eric.load_trust_types(sources.path_of("eric_trust_types"))
+        self.assertEqual(len(types), 205)
+        self.assertEqual(sum(1 for t in types.values() if t["type"] == "MENTAL HEALTH AND LEARNING DISABILITY"), 45)
+        self.assertEqual(types["RBS"], {"type": "ACUTE - SPECIALIST", "peer_group": "Acute specialist"})  # Alder Hey
+        self.assertEqual(types["R1A"]["peer_group"], "Community and care")
+
+    def test_unknown_type_is_refused_not_guessed(self):
+        rows = ["Trust Code,Trust Name,Trust Type"] + [f"R{i:02d},TRUST {i},ACUTE - LARGE" for i in range(160)]
+        rows.append("RZZ,ODD TRUST,HOSPICE")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "eric.csv"
+            path.write_text("\n".join(rows), encoding="cp1252")
+            with self.assertRaises(ValueError):
+                eric.load_trust_types(path)
+
+    def test_short_file_is_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "eric.csv"
+            path.write_text("Trust Code,Trust Type\nR01,ACUTE - LARGE\n", encoding="cp1252")
+            with self.assertRaises(ValueError):
+                eric.load_trust_types(path)
+
+
 class FindingsTests(unittest.TestCase):
     findings = None
 
@@ -170,15 +223,73 @@ class FindingsTests(unittest.TestCase):
         self.assertIn("EAST LONDON NHS FOUNDATION TRUST", screened)
         self.assertNotIn("EAST LONDON NHS FOUNDATION TRUST", ranked)
 
+    def test_trust_rate_leaves_cancellations_out(self):
+        for r in self.findings["providers"]["nhs_trusts"]:
+            self.assertEqual(r["attended_or_dna"], r["attended"] + r["dna"])
+            self.assertAlmostEqual(r["dna_rate"], r["dna"] / (r["attended"] + r["dna"]))
+
+    def test_some_trusts_report_no_cancellations(self):
+        providers = self.findings["providers"]
+        self.assertEqual(len(providers["trusts_reporting_no_cancellations"]), 22)
+        self.assertIn("ALDER HEY CHILDREN'S NHS FOUNDATION TRUST", providers["trusts_reporting_no_cancellations"])
+
     def test_overdispersion_changes_the_story(self):
         providers = self.findings["providers"]
-        self.assertEqual(providers["naive_outside_998"], 142)
-        self.assertEqual((providers["above_998"], providers["below_998"]), (4, 2))
+        self.assertEqual(providers["naive_outside_998"], 144)
+        self.assertEqual((providers["above_998"], providers["below_998"]), (6, 6))
+
+    def test_v022_denominator_is_reproduced_as_sensitivity(self):
+        old = self.findings["providers"]["sensitivity_old_denominator"]
+        self.assertEqual((old["above_998"], old["below_998"]), (4, 2))
+        self.assertAlmostEqual(old["p0"], 0.05445, places=5)
 
     def test_sensitivity_to_scale_is_reported(self):
         sensitivity = self.findings["providers"]["sensitivity_untransformed"]
-        self.assertEqual(sensitivity["outside_998"], 8)
+        self.assertEqual(sensitivity["outside_998"], 10)
         self.assertEqual(len(sensitivity["flagged_only_untransformed"]), 2)
+
+    def test_age_bands_reconcile_with_trust_totals(self):
+        providers = self.findings["providers"]
+        self.assertEqual(len(providers["age_bands"]), 11)
+        # Fixed order, so findings.json is byte-identical between runs (CI diffs it).
+        self.assertEqual(list(providers["age_bands"])[:2], ["00-09", "10-19"])
+        self.assertEqual(list(providers["age_bands"])[-1], "Unknown")
+        self.assertLess(providers["age_band_rounding"]["max_volume_gap"], 0.002)
+        self.assertEqual(len(providers["age_band_rounding"]["dna_gap_over_1pct"]), 2)
+        for r in providers["nhs_trusts"]:
+            self.assertGreater(r["age"]["expected"], 0)
+
+    def test_age_adjustment_changes_some_verdicts(self):
+        providers = self.findings["providers"]
+        by_name = {r["name"]: r for r in providers["nhs_trusts"]}
+        self.assertEqual((providers["age_above_998"], providers["age_below_998"]), (7, 6))
+        # A mental health and community trust that stands out on crude rates but not once age is allowed for...
+        self.assertEqual(by_name["LEICESTERSHIRE PARTNERSHIP NHS TRUST"]["flag"], "above")
+        self.assertIsNone(by_name["LEICESTERSHIRE PARTNERSHIP NHS TRUST"]["age"]["flag"])
+        # ...and an eye hospital with older patients that only stands out once age is allowed for.
+        self.assertIsNone(by_name["MOORFIELDS EYE HOSPITAL NHS FOUNDATION TRUST"]["flag"])
+        self.assertEqual(by_name["MOORFIELDS EYE HOSPITAL NHS FOUNDATION TRUST"]["age"]["flag"], "above")
+
+    def test_every_ranked_trust_has_an_eric_type(self):
+        trusts = self.findings["providers"]["nhs_trusts"]
+        self.assertTrue(all(r["peer"]["eric_type"] for r in trusts))
+
+    def test_peer_groups_and_minimum_size(self):
+        groups = self.findings["providers"]["peer_groups"]
+        self.assertEqual({g: e["trusts"] for g, e in groups.items()},
+                         {"Acute": 115, "Acute specialist": 16, "Community and care": 7,
+                          "Mental health and learning disability": 13})
+        self.assertFalse(groups["Community and care"]["limits"])
+        community = [r for r in self.findings["providers"]["nhs_trusts"] if r["peer"]["group"] == "Community and care"]
+        self.assertTrue(all(r["peer"]["flag"] is None and r["peer"]["ratio"] is None for r in community))
+
+    def test_only_three_trusts_stand_out_on_every_view(self):
+        self.assertEqual(self.findings["providers"]["stand_out_in_every_view"], [
+            "NORTH STAFFORDSHIRE COMBINED HEALTHCARE NHS TRUST",
+            "NORFOLK AND NORWICH UNIVERSITY HOSPITALS NHS FOUNDATION TRUST",
+            "CORNWALL PARTNERSHIP NHS FOUNDATION TRUST",
+        ])
+        self.assertEqual(len(self.findings["providers"]["stand_out_in_any_view"]), 15)
 
     def test_x_suffix_codes_link_to_ods(self):
         linked = {r["code"]: r["ods_code"] for r in self.findings["providers"]["nhs_trusts"]}
@@ -199,6 +310,12 @@ class FindingsTests(unittest.TestCase):
             self.assertIn("Five things to take from this", html)
             with (out / "tables" / "ethnicity.csv").open() as handle:
                 self.assertEqual(len(list(csv.DictReader(handle))), 5)
+            self.assertIn("Comparing trusts like with like", html)
+            with (out / "tables" / "nhs_trusts_funnel.csv").open() as handle:
+                rows = list(csv.DictReader(handle))
+            self.assertEqual(len(rows), len(self.findings["providers"]["nhs_trusts"]))
+            self.assertIn("age_ratio", rows[0])
+            self.assertIn("peer_flag", rows[0])
 
 
 class GpadTests(unittest.TestCase):

@@ -26,7 +26,8 @@ All inputs are official files downloaded on 2026-11-07 and committed unchanged u
 |---|---|---|---|
 | DNA rate: headline, trend, ethnicity, region | DNAs | All appointments | Matches the HES publication |
 | DNA rate: age and sex, appointment type, specialty | DNAs | Attended + DNA | These tables publish no cancellations |
-| DNA rate: trust funnel | DNAs | Appointments with a recorded outcome | Trusts that send "unknown outcome" records are neither rewarded nor penalised |
+| DNA rate: trust comparison | DNAs | Attended + DNA | The standard definition for comparing missed appointments. 22 of the 151 trusts report no cancellations to HES, so a denominator that includes cancellations would make their rates look higher |
+| Age-adjusted ratio | DNAs in the trust's 11 published age bands | Expected DNAs: each band's attended + DNA × England's DNA rate for that band | Indirect standardisation; 1.0 = as England's age-specific rates predict |
 | GP DNA rate | DNA | Attended + DNA | About 6% of GP appointments have an unknown status, varying by mode |
 | First attendances per 100,000 | First attendances (in person + tele) | Decile population, as published | Crude; not age- or need-adjusted |
 
@@ -34,8 +35,12 @@ All inputs are official files downloaded on 2026-11-07 and committed unchanged u
 
 - **Intervals for proportions:** Wilson score.
 - **Ratio to the White group:** ratio of two proportions with a Katz log-scale 95% interval. At these volumes the intervals are a few hundredths wide; the uncertainty that matters is systematic (age structure, missing ethnicity), not sampling.
-- **Funnel plot:** target is the England rate p0. Rates go on the variance-stabilising arcsine-square-root scale, where the sampling variance is 1/(4n). z-scores are winsorised at the 10th and 90th percentiles and their mean square gives the overdispersion; the between-trust variance tau² is added to each trust's sampling variance (Spiegelhalter 2005, additive random effects, as used for proportions in NHS and CQC monitoring). Limits are `sin²(asin(sqrt(p0)) ± z·sqrt(1/(4n) + tau²))` with z = 1.96 and 3.09. Without tau², 142 of 151 trusts fall outside 99.8% limits, because limits for trusts with a million appointments are a few hundredths of a percentage point wide. With it, 6 do (4 above, 2 below).
-- **Sensitivity:** the same model on the untransformed proportion scale puts 8 trusts outside the limits. The 2 extra (Herefordshire and Worcestershire Health and Care, Liverpool University Hospitals) are borderline and reported as such.
+- **Trust comparison, three views.** Every trust is judged against England, after allowing for age, and against trusts of the same type. A trust that stands out on all three is worth a question; one that stands out on only one mostly tells you about the comparison.
+- **View 1, against England:** target is England's rate p0 = 6.52%. Rates go on the variance-stabilising arcsine-square-root scale, where the sampling variance is 1/(4n). z-scores are winsorised at the 10th and 90th percentiles and their mean square gives the overdispersion; the between-trust variance tau² is added to each trust's sampling variance (Spiegelhalter 2005, additive random effects, as used for proportions in NHS and CQC monitoring). Limits are `sin²(asin(sqrt(p0)) ± z·sqrt(1/(4n) + tau²))` with z = 1.96 and 3.09. Without tau², 144 of 151 trusts fall outside 99.8% limits; with it, 12 do (6 above, 6 below).
+- **View 2, allowing for age:** observed DNAs O over expected DNAs E (above). O is treated as Poisson with mean E, so sqrt(O/E) has sampling variance 1/(4E) around 1; tau² is estimated on that scale in the same winsorised way, and limits are `(1 ± z·sqrt(1/(4E) + tau²))²`. 7 trusts sit above and 6 below. HES rounds trust counts to 5 and suppresses small cells, so age bands do not always sum to a trust's total: expected counts move by at most 0.12%, and observed DNAs by more than 1% at 2 trusts, neither of which changes a verdict.
+- **View 3, against the same type:** trusts are grouped by their type in NHS England's Estates Returns Information Collection 2025/26 (general acute pooled across size and teaching bands; acute specialist; mental health and learning disability; community and care). Each group's own age-adjusted level k = sum(O)/sum(E) becomes its target, so expected counts are k·E, and tau² is estimated within the group. Groups with fewer than 8 trusts get no limits; that minimum was set before the ERIC file was loaded. Unknown ERIC types stop the run rather than being guessed.
+- **Result:** 15 trusts are outside the 99.8% limits on at least one view; 3 are outside in the same direction on all three: North Staffordshire Combined Healthcare NHS Trust; Norfolk and Norwich University Hospitals NHS Foundation Trust; Cornwall Partnership NHS Foundation Trust.
+- **Sensitivity:** the national model on the untransformed proportion scale puts 10 trusts outside the limits, and Birmingham Community Healthcare NHS Foundation Trust and Birmingham Women's and Children's NHS Foundation Trust only on that scale; they are reported as borderline. The v0.2.2 denominator (appointments with a recorded outcome) is kept as a second sensitivity check and reproduces its 4 above and 2 below exactly.
 - **Trust selection:** providers with at least 10,000 appointments whose code (after removing an undocumented `-X` suffix) is a current NHS trust in ODS `etr`, and whose unknown-outcome share is at most 5%.
 
 ## Publisher conventions
@@ -48,6 +53,5 @@ All inputs are official files downloaded on 2026-11-07 and committed unchanged u
 ## What would make this stronger
 
 - Age-standardised DNA rates by ethnicity and deprivation, which need patient-level or finer published tables (for example via an approved HES extract or a local data warehouse).
-- Comparison of trusts within type (acute, mental health, community, specialist).
 - Specialty mix adjustment for the trust comparison.
 - A pre-registered evaluation of any reminder or booking change, with in-person routes kept open.
