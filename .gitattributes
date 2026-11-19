@@ -1,0 +1,3 @@
+# The report is built by the pipeline (python -m nhs_outpatients), so keep it out of
+# the language statistics and collapse it in diffs.
+reports/index.html linguist-generated=true
